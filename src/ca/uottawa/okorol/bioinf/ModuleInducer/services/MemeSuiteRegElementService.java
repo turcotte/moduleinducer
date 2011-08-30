@@ -44,33 +44,30 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 	}
 	
 	
-	private String createSequencesFile(ArrayList<Feature> regRegions) throws DataFormatException{
-		if (regRegions == null){
-			throw new DataFormatException("Can not create regulatory sequences file for MEME. No regulatory regions were supplied."); 
-		}
+	private String createSequencesFile(ArrayList<Feature> regRegions, String fileName) throws DataFormatException{
 		
-		String seqFileName = tempMemeOutputDir + SystemVariables.getInstance().getString("meme.tmp.seq.output.file.name")
-										 + System.currentTimeMillis();
+		if (!new File(fileName).exists() && regRegions != null){
 		
-		BufferedWriter writer = null;
-
-		try {
-			writer = new BufferedWriter(new FileWriter(seqFileName));
-			
-			for (Iterator<Feature> iterator = regRegions.iterator(); iterator.hasNext();) {
-				Feature gene = (Feature) iterator.next();
+			BufferedWriter writer = null;
+	
+			try {
+				writer = new BufferedWriter(new FileWriter(fileName));
 				
-				writer.write("> "+ gene.getId() + "\n" + gene.getSequence() + "\n\n"); 
+				for (Iterator<Feature> iterator = regRegions.iterator(); iterator.hasNext();) {
+					Feature gene = (Feature) iterator.next();
+					
+					writer.write("> "+ gene.getId() + "\n" + gene.getSequence() + "\n\n"); 
+					
+				}
 				
+				writer.close();
+				
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			
-			writer.close();
-			
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		
-		return seqFileName;
+		return fileName;
 		
 	}
 	
@@ -84,14 +81,16 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 		
 		
 		ArrayList<Feature> tfbsHits = new ArrayList<Feature>();
-
+		
+		final String seqFileName = tempMemeOutputDir + SystemVariables.getInstance().getString("meme.tmp.seq.output.file.name.prefix") + "Pos.fa";
+		final String bkgrSeqFileName = tempMemeOutputDir + SystemVariables.getInstance().getString("meme.tmp.seq.output.file.name.prefix") + "Neg.fa";
+		
 		// *** Write sequences into a fasta file
-		final String seqFileName = createSequencesFile(regRegions);
-		final String bkgrSeqFileName = createSequencesFile(backgroundRegRegions);
+		createSequencesFile(regRegions, seqFileName);
+		createSequencesFile(backgroundRegRegions, bkgrSeqFileName);
 		
 		
 		pssmMatchingStats = new Hashtable<String, Double>();
-
 
 		try {
 			Runtime rt = Runtime.getRuntime();
@@ -101,25 +100,29 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 			Process pr;
 			
 			if (System.getProperty("os.name").startsWith("Mac")){ 
+				int exitVal;
 				
 				// *** Discover motifs using DREME 
-				final String dremeCmd = "./dreme -p " + seqFileName + " -n " + bkgrSeqFileName + " > " + tempMemeOutputDir + dremeOutputFileName; 
-//				final String dremeCmd = "./dreme -p " + seqFileName + " -n " + bkgrSeqFileName; 
+				if (backgroundRegRegions != null) { //i.e. if we already have the results of a DREME run in a temp dir
+					final String dremeCmd = "./dreme -p " + seqFileName + " -n " + bkgrSeqFileName + " > " + tempMemeOutputDir + dremeOutputFileName; 
+	//				final String dremeCmd = "./dreme -p " + seqFileName + " -n " + bkgrSeqFileName; 
+					
+					System.out.println(dremeCmd + "\n");
+					System.out.println("tempDir:" + tempMemeOutputDir);
+					
+					pr = rt.exec(new String[] { "/bin/sh", "-c", dremeCmd }, null, new File(memeInstallDirName)); 
+	
+					// 0 -success
+					// 1-127 - job itself called exit()
+					// 129-255 - job terminated by Unix
+					exitVal = pr.waitFor();
+					System.out.println("DREME exit code: " + exitVal);
+				}
 				
-				System.out.println(dremeCmd + "\n");
-				System.out.println("tempDir:" + tempMemeOutputDir);
-				
-				pr = rt.exec(new String[] { "/bin/sh", "-c", dremeCmd }, null, new File(memeInstallDirName)); 
-
-				// 0 -success
-				// 1-127 - job itself called exit()
-				// 129-255 - job terminated by Unix
-				int exitVal = pr.waitFor();
-				System.out.println("DREME exit code: " + exitVal);
-
 				
 				// *** Locate motifs (discovered by DREME) using MAST
-				final String mastCmd = "./mast  " + tempMemeOutputDir + dremeOutputFileName + " " + seqFileName + " -o "+ tempMemeOutputDir + "mastTestDir"; 
+				final String mastCmd = "./mast  " + tempMemeOutputDir + dremeOutputFileName + " " + seqFileName + 
+							" -o "+ tempMemeOutputDir + "mastTestDir" + System.currentTimeMillis(); 
 				
 				pr = rt.exec(new String[] { "/bin/sh", "-c", mastCmd }, null, new File(memeInstallDirName)); 
 
@@ -155,6 +158,7 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 		
 		//File seqFile = new File(seqFileName);
 		//seqFile.delete(); 
+		
 
 		return tfbsHits;
 	}
