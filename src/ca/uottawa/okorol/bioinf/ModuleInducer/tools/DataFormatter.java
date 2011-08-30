@@ -1,8 +1,20 @@
 package ca.uottawa.okorol.bioinf.ModuleInducer.tools;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.Experimenter;
 
 /* Collection of static methods that deal with formatting of the project's specific data,
@@ -10,6 +22,89 @@ import ca.uottawa.okorol.bioinf.ModuleInducer.services.Experimenter;
  */
 public class DataFormatter {
 
+	/* Extract motif hits from MAST output (as xml)  
+	 * @param xmlFileName - full path to an xml file
+	 */
+	public static ArrayList<Feature> extractRegElementsFromXml(String xmlFileName){
+		ArrayList<Feature> motifHits = new ArrayList<Feature>();
+		
+		DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+		try {
+
+			//Using factory get an instance of document builder
+			DocumentBuilder db = dbf.newDocumentBuilder();
+
+			//parse using builder to get DOM representation of the XML file
+			Document dom = db.parse(xmlFileName);
+			
+			//get the root element
+			Element docEle = dom.getDocumentElement();
+
+			System.out.println ("Root element of the doc is " + docEle.getNodeName());
+
+			NodeList sequenceElList = docEle.getElementsByTagName("sequence");
+			System.out.println("Number of sequences in the document: " + sequenceElList.getLength());
+			
+			if(sequenceElList != null && sequenceElList.getLength() > 0) {
+				for (int i = 0 ; i < sequenceElList.getLength();i++) {
+					
+					//get the sequence element
+					Element seqEl = (Element)sequenceElList.item(i);		
+					
+					NodeList hitElList = seqEl.getElementsByTagName("hit");
+					
+					System.out.println("Number of hits for sequence " + i +" : " + hitElList.getLength());
+					
+					for (int j = 0; j < hitElList.getLength(); j++){
+						Element hitEl = (Element)hitElList.item(i);
+						
+						Feature hit = new Feature("TF_binding_site");
+						hit.setName(getTextValue(hitEl, "motif")); //TODO: perhaps print the actual motif sequence
+						hit.setParent(getTextValue(seqEl,"name"));
+						if ("reverse".equals(getTextValue(hitEl, "strand"))){
+							hit.setStrand("R");
+						} else {
+							hit.setStrand("D");
+						}
+//						hit.setStartPosition(Integer.parseInt(getTextValue(hitEl, "pos")));
+//						hit.setEndPosition(0); //TODO: fix
+//						hit.setScore(Double.parseDouble(getTextValue(hitEl, "pvalue")));
+						
+						motifHits.add(hit);
+					}
+				}
+			}
+
+
+
+		}catch(ParserConfigurationException pce) {
+			pce.printStackTrace();
+		}catch(SAXException se) {
+			se.printStackTrace();
+		}catch(IOException ioe) {
+			ioe.printStackTrace();
+		}
+
+		
+		return motifHits;
+	}
+	
+	/* Helper method for the xml parser above
+	 * Given an xml element, returns a String value of the supplied tag
+	 */
+	private static String getTextValue(Element ele, String tagName) {
+		String textVal = null;
+		NodeList nl = ele.getElementsByTagName(tagName);
+		if(nl != null && nl.getLength() > 0) {
+			Element el = (Element)nl.item(0);
+			textVal = el.getFirstChild().getNodeValue();
+		}
+
+		return textVal;
+	}
+
+
+	
 	/* Extracts the rules of resulting theory from the full Aleph output.
 	 * Each rule is placed separately into the ArrayList.
 	 */
