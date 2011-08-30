@@ -8,9 +8,10 @@ import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
 import ca.uottawa.okorol.bioinf.ModuleInducer.exceptions.DataFormatException;
 import ca.uottawa.okorol.bioinf.ModuleInducer.properties.SystemVariables;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.CElegansRegRegionService;
-import ca.uottawa.okorol.bioinf.ModuleInducer.services.Experimenter;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.Explorer;
-import ca.uottawa.okorol.bioinf.ModuleInducer.services.PatserRegElementService;
+import ca.uottawa.okorol.bioinf.ModuleInducer.services.HomoSapiensRegRegionService;
+import ca.uottawa.okorol.bioinf.ModuleInducer.services.MemeSuiteRegElementService;
+import ca.uottawa.okorol.bioinf.ModuleInducer.services.SyntheticRegRegionService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.tools.FileHandling;
 
 public class MainEngine {
@@ -42,7 +43,61 @@ public class MainEngine {
 			String tempOutputDir;
 			
 
+			
+			
+			// *** testing MEME suite
+			
+			
+			timeBefore = System.currentTimeMillis();
+			
+			tempOutputDir = FileHandling.createTempIlpOutputDirectory();
+			System.out.println("== All the data / scripts from this run will be saved in " + tempOutputDir + " directory.");
+			
+			
+			MemeSuiteRegElementService regElService = new MemeSuiteRegElementService(tempOutputDir);
+			
+			
+			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: C.elegans vs Synthetic plain" ); 
+			HomoSapiensRegRegionService regRegionService = new HomoSapiensRegRegionService(HomoSapiensRegRegionService.JURKAT, 
+					HomoSapiensRegRegionService.SYNTHETIC_PLAIN, 1); 
+			
+			//----- Shrink the size of data
+	
+			ArrayList<Feature> newPos = new ArrayList<Feature>();
+			ArrayList<Feature> newNeg = new ArrayList<Feature>();
+			
+			//Works: 1000 (14 motifs, 446 sec), 500 (8 motifs, 147 sec), 200 (6 motifs, 53 sec), 60 (3 motifs, 9 sec)
+			//Doesn't: 20
+			for (int i=0; i < 60; i++){
+				newPos.add(regRegionService.getPositiveRegulatoryRegions().get(i));
+				newNeg.add(regRegionService.getNegativeRegulatoryRegions().get(i));
+				
+			}
+			
+			regRegionService.setPositiveRegulatoryRegions(newPos);
+			regRegionService.setNegativeRegulatoryRegions(newNeg);
+		
+			//-----
+			
+			
+			Explorer explorer = new Explorer(regRegionService, regElService, tempOutputDir);
+			//Experimenter experimenter = new Experimenter(explorer);
 
+			System.out.println("\n\n************************ Single run of all data ***************************\n");
+			String theory = explorer.induceRules();
+			System.out.println(theory);
+		
+	
+			
+			//FileHandling.deleteDirectory(tempOutputDir);	
+			//System.out.println(SystemVariables.getInstance().getExperimentNotes());
+			
+			
+			
+			
+			
+
+			/*		
 			
 			// *** Homo Sapiens data
 
@@ -52,7 +107,8 @@ public class MainEngine {
 			int negExMultFactor = 1; 
 			
 			
-			/*		
+			
+			
 			/////////////////////////////////////////////////// Run 1 //////////////////////////////
 			
 			System.out.println("===================================================================\n	Starting run: Jurkat vs erythroid.");
@@ -213,7 +269,7 @@ public class MainEngine {
 		*/	
 			
 			
-			
+		/*	
 
 			// *** C. elegans data
 			timeBefore = System.currentTimeMillis();
@@ -223,19 +279,20 @@ public class MainEngine {
 			
 			
 			pwmDir = new File(SystemVariables.getInstance().getString("C.elegans.PWMs.dir"));
-			PatserRegElementService patserRegElService = new PatserRegElementService(pwmDir, tempOutputDir);
+			PatserRegElementService regElService = new PatserRegElementService(pwmDir, tempOutputDir);
 			
-//			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: C.elegans vs Synthetic plain" ); 
-//			CElegansRegRegionService cElegansRegRegionService = new CElegansRegRegionService(1); 
+			
+			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: C.elegans vs Synthetic plain" ); 
+			CElegansRegRegionService cElegansRegRegionService = new CElegansRegRegionService(1); 
 
 //			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: C.elegans vs Synthetic with planted tfbs" ); 
 //			CElegansRegRegionService cElegansRegRegionService = new CElegansRegRegionService(1, patserRegElService);
 
-			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: C.elegans vs Synthetic with positionally planted tfbs" ); 
-			CElegansRegRegionService cElegansRegRegionService = new CElegansRegRegionService(1, tempOutputDir, pwmDir);
+//			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: C.elegans vs Synthetic with positionally planted tfbs" ); 
+//			CElegansRegRegionService cElegansRegRegionService = new CElegansRegRegionService(1, tempOutputDir, pwmDir);
 			
 			
-			Explorer explorer = new Explorer(cElegansRegRegionService, patserRegElService, tempOutputDir);
+			Explorer explorer = new Explorer(cElegansRegRegionService, regElService, tempOutputDir);
 			//Experimenter experimenter = new Experimenter(explorer);
 
 			System.out.println("\n\n************************ Single run of all data ***************************\n");
@@ -247,7 +304,7 @@ public class MainEngine {
 			//FileHandling.deleteDirectory(tempOutputDir);	
 			//System.out.println(SystemVariables.getInstance().getExperimentNotes());
 			
-			 
+			*/ 
 			
 			/*
 			

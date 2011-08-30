@@ -72,6 +72,14 @@ public class FileHandling {
 					SystemVariables.getInstance().getString("patser.tmp.dir.name.prefix") + System.currentTimeMillis() + "/";
 	}
 	
+	public static String getDefaultTempMemeOutputDirName(String tempJobDirName) throws DataFormatException{
+		if (!tempJobDirName.endsWith("/") || tempJobDirName.endsWith("\\")){
+			tempJobDirName = tempJobDirName + "/";
+		}
+		return 	tempJobDirName + SystemVariables.getInstance().getString("job.tmp.output.dir.prefix") +
+					SystemVariables.getInstance().getString("meme.tmp.dir.name.prefix") + System.currentTimeMillis() + "/";
+	}
+	
 	public static String getDefaultTempPatserPwmDirName(String patserOutputDir) throws DataFormatException{
 		if (!patserOutputDir.endsWith("/") || patserOutputDir.endsWith("\\")){
 			patserOutputDir = patserOutputDir + "/";
@@ -107,6 +115,12 @@ public class FileHandling {
 		return createDirectory(tmpDirName);
 	}
 	
+	
+	public static String createTempMemeOutputDirectory(String tempJobDir) throws DataFormatException{
+		String tmpDirName =  getDefaultTempMemeOutputDirName(tempJobDir);
+		
+		return createDirectory(tmpDirName);
+	}
 	
 	
 	

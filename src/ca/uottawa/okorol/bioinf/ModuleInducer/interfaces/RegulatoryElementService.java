@@ -17,4 +17,5 @@ public interface RegulatoryElementService {
 	public Hashtable<String, int[][]> getPssms() throws DataFormatException;
 //TODO: retire this one:
 	public ArrayList<RegulatoryElementPWM> getRegulatoryElementsPWMs() throws DataFormatException;
+	public ArrayList<Feature> getRegulatoryElements(ArrayList<Feature> regRegions, ArrayList<Feature> backgroundRegRegions, double cutOffScore) throws DataFormatException;
 }

@@ -80,6 +80,11 @@ public class Explorer{
 		
 		ArrayList<Feature> posRegElements = regulatoryElementService.getRegulatoryElements(
 				regulatoryRegionService.getPositiveRegulatoryRegions(), positiveCutOffScore, posATcomposition, posCGcomposition);
+		
+		if (posRegElements == null) {
+			posRegElements = regulatoryElementService.getRegulatoryElements(
+					regulatoryRegionService.getPositiveRegulatoryRegions(), regulatoryRegionService.getNegativeRegulatoryRegions(), positiveCutOffScore);
+		}
 
 		//**** Print notes
 		SystemVariables.getInstance().appendToExperimentNotes("\\n* Number of PSSM matches in positive sequences: ");
@@ -111,6 +116,11 @@ public class Explorer{
 		
 		ArrayList<Feature> negRegElements = regulatoryElementService.getRegulatoryElements(
 				regulatoryRegionService.getNegativeRegulatoryRegions(), negativeCutOffScore, negATcomposition, negCGcomposition);
+		
+		if (negRegElements == null){
+			negRegElements = regulatoryElementService.getRegulatoryElements(
+					regulatoryRegionService.getNegativeRegulatoryRegions(), null, negativeCutOffScore);
+		}
 		
 		
 		//**** Print notes
@@ -172,10 +182,10 @@ public class Explorer{
 		
 		System.out.println("== Created all ILP files. Starting to induce.");
 		
-//		String ilpTheory = ilpService.runILP();		
-//		return ilpTheory;
+		String ilpTheory = ilpService.runILP();		
+		return ilpTheory;
 		
-		return "Done";
+//		return "Done";
 	}
 	
 

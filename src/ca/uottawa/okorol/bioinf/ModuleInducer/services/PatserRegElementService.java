@@ -666,6 +666,15 @@ public class PatserRegElementService implements RegulatoryElementService {
 		}
 		
 	}
+
+	@Override
+	public ArrayList<Feature> getRegulatoryElements(
+			ArrayList<Feature> regRegions,
+			ArrayList<Feature> backgroundRegRegions, double cutOffScore)
+			throws DataFormatException {
+		throw new DataFormatException("This method is not applicable to Patser Service");
+		
+	}
 	
 
 }
