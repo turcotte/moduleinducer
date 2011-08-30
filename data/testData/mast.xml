@@ -1,0 +1,1062 @@
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<!DOCTYPE mast[
+<!ELEMENT mast (model, alphabet, motifs, sequences, runtime)>
+<!ATTLIST mast version CDATA #REQUIRED release CDATA #REQUIRED>
+<!ELEMENT model (command_line, max_correlation, remove_correlated, strand_handling, translate_dna, max_seq_evalue,
+    adj_hit_pvalue, max_hit_pvalue, max_weak_pvalue, host, when)>
+<!ELEMENT command_line (#PCDATA)>
+<!ELEMENT max_correlation (#PCDATA)>
+<!ELEMENT remove_correlated EMPTY>
+<!ATTLIST remove_correlated value (y|n) #REQUIRED>
+<!ELEMENT strand_handling EMPTY>
+<!ATTLIST strand_handling value (combine|separate|norc|protein) #REQUIRED>
+<!ELEMENT translate_dna EMPTY>
+<!ATTLIST translate_dna value (y|n) #REQUIRED>
+<!ELEMENT max_seq_evalue (#PCDATA)>
+<!ELEMENT adj_hit_pvalue EMPTY>
+<!ATTLIST adj_hit_pvalue value (y|n) #REQUIRED>
+<!ELEMENT max_hit_pvalue (#PCDATA)>
+<!ELEMENT max_weak_pvalue (#PCDATA)>
+<!ELEMENT host (#PCDATA)>
+<!ELEMENT when (#PCDATA)>
+<!ELEMENT alphabet (letter+)>
+<!ATTLIST alphabet type (amino-acid|nucleotide) #REQUIRED bg_source (preset|file|sequence_composition) #REQUIRED bg_file CDATA #IMPLIED>
+<!ELEMENT letter EMPTY>
+<!ATTLIST letter symbol CDATA #REQUIRED ambig (y|n) "n" bg_value CDATA #IMPLIED>
+<!ELEMENT motifs (motif+,correlation*,nos*)>
+<!ATTLIST motifs source CDATA #REQUIRED name CDATA #REQUIRED last_mod_date CDATA #REQUIRED>
+<!ELEMENT motif EMPTY>
+<!-- num is simply the loading order of the motif, it's superfluous but makes things easier for XSLT -->
+<!ATTLIST motif id ID #REQUIRED num CDATA #REQUIRED name CDATA #REQUIRED width CDATA #REQUIRED
+   best_f CDATA #REQUIRED best_r CDATA #IMPLIED bad (y|n) "n">
+<!-- for n > 1 motifs there should be (n * (n - 1)) / 2 correlations, obviously there are none for only 1 motif -->
+<!ELEMENT correlation EMPTY>
+<!ATTLIST correlation motif_a IDREF #REQUIRED motif_b IDREF #REQUIRED value CDATA #REQUIRED>
+<!-- nos: Nominal Order and Spacing diagram, a rarely used feature where mast can adjust pvalues for an expected motif spacing -->
+<!ELEMENT nos (expect+)>
+<!-- length is in the same unit as the motifs, which is not always the same unit as the sequence -->
+<!ATTLIST nos length CDATA #REQUIRED>
+<!-- the expect tags are expected to be ordered by pos ascending -->
+<!ELEMENT expect EMPTY>
+<!ATTLIST expect pos CDATA #REQUIRED gap CDATA #REQUIRED motif IDREF #REQUIRED>
+<!ELEMENT sequences (database+, sequence*)>
+<!-- the database tags are expected to be ordered in file specification order -->
+<!ELEMENT database EMPTY>
+<!ATTLIST database id ID #REQUIRED num CDATA #REQUIRED source CDATA #REQUIRED name CDATA #REQUIRED last_mod_date CDATA #REQUIRED 
+    seq_count CDATA #REQUIRED residue_count CDATA #REQUIRED type (amino-acid|nucleotide) #REQUIRED link CDATA #IMPLIED>
+<!-- the sequence tags are expected to be ordered by best combined p-value (of contained score tags) ascending -->
+<!ELEMENT sequence (score+,seg*)>
+<!ATTLIST sequence id ID #REQUIRED db IDREF #REQUIRED num CDATA #REQUIRED name CDATA #REQUIRED comment CDATA "" length CDATA #REQUIRED>
+<!ELEMENT score EMPTY>
+<!-- frame is the starting offset for translation of dna sequences which gives the lowest pvalues for the provided protein motifs -->
+<!ATTLIST score strand (both|forward|reverse) #REQUIRED frame (a|b|c) #IMPLIED combined_pvalue CDATA #REQUIRED evalue CDATA #REQUIRED>
+<!-- within each sequence the seg tags are expected to be ordered by start ascending -->
+<!ELEMENT seg (data,hit+)>
+<!ATTLIST seg start CDATA #REQUIRED>
+<!ELEMENT data (#PCDATA)>
+<!-- within each seg the hit tags are expected to be ordered by pos ascending and then forward strand first -->
+<!ELEMENT hit EMPTY>
+<!-- gap, while superfluous, makes creating motif diagrams for the text version much easier when using XSLT -->
+<!ATTLIST hit pos CDATA #REQUIRED gap CDATA #REQUIRED motif IDREF #REQUIRED pvalue CDATA #REQUIRED strand (forward|reverse) "forward" 
+    match CDATA #REQUIRED translation CDATA #IMPLIED>
+<!ELEMENT runtime EMPTY>
+<!ATTLIST runtime cycles CDATA #REQUIRED seconds CDATA #REQUIRED>
+]>
+<mast version="4.6.1" release="Mon Mar 21 15:08:38 EST 2011">
+	<model>
+		<command_line>mast /Users/okoro103/workspace/ModuleInducer/tmp/mi_1314733809249/mi_MemeOut1314733809251/dreme_out.motifs /Users/okoro103/workspace/ModuleInducer/tmp/mi_1314733809249/mi_MemeOut1314733809251/memeSeqPos.fa -o /Users/okoro103/workspace/ModuleInducer/tmp/mi_1314733809249/mi_MemeOut1314733809251/mastTestDir1314733840564</command_line>
+		<max_correlation>0.60</max_correlation>
+		<remove_correlated value="n"/>
+		<strand_handling value="combine"/>
+		<translate_dna value="n"/>
+		<max_seq_evalue>10</max_seq_evalue>
+		<adj_hit_pvalue value="n"/>
+		<max_hit_pvalue>0.0001</max_hit_pvalue>
+		<max_weak_pvalue>0.0001</max_weak_pvalue>
+		<host>affix.local</host>
+		<when>Tue Aug 30 15:50:40 2011</when>
+	</model>
+	<alphabet type="nucleotide" bg_source="preset">
+		<letter symbol="A" bg_value="0.274"/>
+		<letter symbol="C" bg_value="0.225"/>
+		<letter symbol="G" bg_value="0.225"/>
+		<letter symbol="T" bg_value="0.274"/>
+	</alphabet>
+	<motifs source="/Users/okoro103/workspace/ModuleInducer/tmp/mi_1314733809249/mi_MemeOut1314733809251/dreme_out.motifs" name="/Users/okoro103/workspace/ModuleInducer/tmp/mi_1314733809249/mi_MemeOut1314733809251/dreme_out.motifs" last_mod_date="Tue Aug 30 15:50:40 2011">
+		<motif id="motif_1" num="1" name="TTATCW" width="6" best_f="TTATCT" best_r="AGATAA"/>
+		<motif id="motif_2" num="2" name="AACCACAR" width="8" best_f="AACCACAG" best_r="CTGTGGTT"/>
+		<motif id="motif_3" num="3" name="CAKCTGY" width="7" best_f="CAGCTGC" best_r="GCAGCTG"/>
+		<motif id="motif_4" num="4" name="GTGGGKA" width="7" best_f="GTGGGGA" best_r="TCCCCAC"/>
+		<motif id="motif_5" num="5" name="ACYTCCT" width="7" best_f="ACTTCCT" best_r="AGGAAGT"/>
+		<correlation motif_a="motif_1" motif_b="motif_2" value="0.25"/>
+		<correlation motif_a="motif_1" motif_b="motif_3" value="0.49"/>
+		<correlation motif_a="motif_2" motif_b="motif_3" value="0.27"/>
+		<correlation motif_a="motif_1" motif_b="motif_4" value="0.19"/>
+		<correlation motif_a="motif_2" motif_b="motif_4" value="0.14"/>
+		<correlation motif_a="motif_3" motif_b="motif_4" value="0.24"/>
+		<correlation motif_a="motif_1" motif_b="motif_5" value="0.26"/>
+		<correlation motif_a="motif_2" motif_b="motif_5" value="0.27"/>
+		<correlation motif_a="motif_3" motif_b="motif_5" value="0.28"/>
+		<correlation motif_a="motif_4" motif_b="motif_5" value="0.14"/>
+	</motifs>
+	<sequences>
+		<database id="db_1" num="1" source="/Users/okoro103/workspace/ModuleInducer/tmp/mi_1314733809249/mi_MemeOut1314733809251/memeSeqPos.fa" name="/Users/okoro103/workspace/ModuleInducer/tmp/mi_1314733809249/mi_MemeOut1314733809251/memeSeqPos.fa" last_mod_date="Tue Aug 30 15:50:09 2011" seq_count="150" residue_count="54133" type="nucleotide"/>
+		<sequence id="seq_1_76" db="db_1" num="76" name="jur_76" comment="" length="424">
+			<score strand="both" combined_pvalue="1.55e-03" evalue="0.23"/>
+			<seg start="76">
+				<data>
+AGAGGCCTCAGGAGACAGTAAACCTGCCTATACCTTGATCTTAGACTTCCTGCCGCCAGAACTGTGGGAAATAAA
+				</data>
+				<hit pos="120" gap="119" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+			<seg start="151">
+				<data>
+TGTCTGTGGTGGAAGCCCCCCAGTCTGTGGTTGCTTTTTGTTGCTGTTGTGATGGCAGCTGGAGCAGACTGACAC
+				</data>
+				<hit pos="175" gap="48" motif="motif_2" pvalue="1.5e-05" strand="reverse" match="++++++++"/>
+				<hit pos="205" gap="22" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="376">
+				<data>
+GGGAGAGGCACCCTGTCCTCCCAGGCTGAGTCCCCACAGACCCCTCTTC
+				</data>
+				<hit pos="406" gap="194" motif="motif_4" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_35" db="db_1" num="35" name="jur_35" comment="" length="202">
+			<score strand="both" combined_pvalue="1.56e-03" evalue="0.23"/>
+			<seg start="76">
+				<data>
+GAGGTAGGGGAAGCAGCTGGAGTTGGGAGATAGGAGGCTGAGGCAGCAGGACCCACAGATAAGGCAGGAGGTGAG
+				</data>
+				<hit pos="88" gap="87" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="151">
+				<data>
+CAGGGGCGGGTGTGCACATCCCGGCAGCTGGAGTGTAGATGAAATCTCAGAG
+				</data>
+				<hit pos="174" gap="79" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_28" db="db_1" num="28" name="jur_28" comment="" length="560">
+			<score strand="both" combined_pvalue="1.74e-03" evalue="0.26"/>
+			<seg start="1">
+				<data>
+GTTGGCTGACTCATGCACCAAGAAAGGGAGACAACGGAACCACAGCCAGAAGCCCCACTTCCTCCCTGAAAACCT
+				</data>
+				<hit pos="38" gap="37" motif="motif_2" pvalue="1.5e-05" strand="forward" match="++++++++"/>
+				<hit pos="57" gap="11" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+			<seg start="226">
+				<data>
+CTGGGACGTCACTGGCTTAGAGGTTAAGCAGCTGTAGGGTGTGCCTCCACAGGCAGAGCTGAGGGTGGGGCTGAC
+				</data>
+				<hit pos="253" gap="189" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="301">
+				<data>
+AGTGCTCTTGCCTGGCTCTGCTCTGTGGTTGACACCTCCCTCCCTCTGCCTGACACCCACATGCTTATCTCCCCA
+				</data>
+				<hit pos="323" gap="63" motif="motif_2" pvalue="1.5e-05" strand="reverse" match="++++++++"/>
+			</seg>
+			<seg start="376">
+				<data>
+GACAGCCCAGCTGTCAGTCTGTCAGATGCATTTGAGTTGGCCCTTGGCTTCACACCCCAAGGTGGGGAAGAGATC
+				</data>
+				<hit pos="383" gap="52" motif="motif_3" pvalue="9.7e-05" strand="forward" match="+++++++"/>
+				<hit pos="437" gap="47" motif="motif_4" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+			</seg>
+			<seg start="526">
+				<data>
+CTGTGACCTTCCAATCCTTCTGTGGGTAAAATTGC
+				</data>
+				<hit pos="547" gap="103" motif="motif_4" pvalue="9.7e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_90" db="db_1" num="90" name="jur_90" comment="" length="249">
+			<score strand="both" combined_pvalue="2.69e-03" evalue="0.4"/>
+			<seg start="1">
+				<data>
+TCCAGGAAGTTCGGACTGGGTGGAGCCCACCACAGCTCAGCAAAGCCCCTGTAACCACACTTCCTCTCTAGATTC
+				</data>
+				<hit pos="4" gap="3" motif="motif_5" pvalue="6.5e-05" strand="reverse" match="+++++++"/>
+				<hit pos="53" gap="42" motif="motif_2" pvalue="4.7e-05" strand="forward" match="+++++++ "/>
+			</seg>
+			<seg start="151">
+				<data>
+TCCCTGGGACAGAGCACCTGGGGGAAGGTGCAGCTGTGGACGCAGCTTCAGCAGACTTAAAGCTTCCTGCCTGCT
+				</data>
+				<hit pos="180" gap="119" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_133" db="db_1" num="133" name="jur_133" comment="" length="606">
+			<score strand="both" combined_pvalue="4.05e-03" evalue="0.61"/>
+			<seg start="76">
+				<data>
+TTTCTACACAGGGACTCCGAAATTCTACATGGGTAGCAGTCAATTTCAACCCCACAAGAAGATGTAGGTGGGGAG
+				</data>
+				<hit pos="143" gap="142" motif="motif_4" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+			</seg>
+			<seg start="151">
+				<data>
+CTGGAAGACCAGGCTTATCTGCAAACGCTGGCTCAGAACAGAGCAGCTGTGGCCTCTGATAAGCAGGGAATAGAG
+GAAGTGGTTTTGTCTCAGGCCTAAAAACCATTTGCTATCTCACAGCGCCTGTTAGTAAGTCACCTCCCCTTCAGT
+				</data>
+				<hit pos="193" gap="43" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+				<hit pos="224" gap="24" motif="motif_5" pvalue="6.5e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="301">
+				<data>
+GTTTACCAAACATTCAGAGGCCCTGCACCTACAGTTCTGTGGAAACCACAACCTCATTCTCCTCAGTTAAAAGCC
+				</data>
+				<hit pos="344" gap="113" motif="motif_2" pvalue="3.2e-05" strand="forward" match="++++++++"/>
+			</seg>
+			<seg start="451">
+				<data>
+GACTCTGAATGTGGTTTCCAGGACTCTCTTTCCTCTTCTGATATGTGGGTGCCAATCCAAATTCAGTTCAACAAA
+				</data>
+				<hit pos="459" gap="107" motif="motif_2" pvalue="6.5e-05" strand="reverse" match=" +++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_128" db="db_1" num="128" name="jur_128" comment="" length="296">
+			<score strand="both" combined_pvalue="5.10e-03" evalue="0.76"/>
+			<seg start="76">
+				<data>
+ATTCTCCATATACAGTGAGGTCTTATCTACAAAGCTCCCCACATCAATATAGTTTACTTACAAGTACCAAATTGA
+				</data>
+				<hit pos="111" gap="110" motif="motif_4" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="151">
+				<data>
+GTTTGTCTGCTCTTCTGAAAGTGGTGAGTTAAGATAAGGGTCCCAACAGATGAACAGCTGTTACTGCAGGTGAGT
+				</data>
+				<hit pos="204" gap="86" motif="motif_3" pvalue="9.7e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="226">
+				<data>
+GTTCTACATCAGGCACGGGATTTTCAACTCATAATGGAGTGACGTTGAACCACATACAATATTATGAGGAT
+				</data>
+				<hit pos="273" gap="62" motif="motif_2" pvalue="6.5e-05" strand="forward" match="+++++++ "/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_23" db="db_1" num="23" name="jur_23" comment="" length="573">
+			<score strand="both" combined_pvalue="5.21e-03" evalue="0.78"/>
+			<seg start="151">
+				<data>
+TCTGCTGCAAGGAGACTCCCCTGCTTCTTCACTTGTGACCCAGGCAAGTGACTTCCTTTCTTTGCTCAGTTTCCT
+				</data>
+				<hit pos="201" gap="200" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+			<seg start="376">
+				<data>
+TGTACTTGGGCTCCTCTGGGAGGGTTCAAAGCAGTGTAAAACCACAGCTGTTACTGAAACTTCCAGTCTGAAAGC
+AGCTGGCCAGAGGAGAGTGGGCCTGCCGCAAAGCTCCCTTCCCTGGGGGGAGCTCAGCTCCTAAGTTAGGCAGTA
+				</data>
+				<hit pos="415" gap="207" motif="motif_2" pvalue="1.5e-05" strand="forward" match="++++++++"/>
+				<hit pos="449" gap="26" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_134" db="db_1" num="134" name="jur_134" comment="" length="222">
+			<score strand="both" combined_pvalue="5.25e-03" evalue="0.79"/>
+			<seg start="1">
+				<data>
+TATTTTTTTAACCACAGAAAAGTCAAAAGATCAGTACACTGATAAACGTGCGTTTTCCTTATCTAGATTTACCAA
+				</data>
+				<hit pos="10" gap="9" motif="motif_2" pvalue="1.5e-05" strand="forward" match="++++++++"/>
+			</seg>
+			<seg start="76">
+				<data>
+CTGTTAACATCGTGCCACATTCACTTTATATCTTAATATTACCCACACTTTCCTCCTTTTTCACATCTGAAAGTG
+				</data>
+				<hit pos="115" gap="97" motif="motif_4" pvalue="9.7e-05" strand="reverse" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_102" db="db_1" num="102" name="jur_102" comment="" length="258">
+			<score strand="both" combined_pvalue="5.31e-03" evalue="0.8"/>
+			<seg start="1">
+				<data>
+ACCACTGCACTCCAGCCTGGGCGACAGAGCGAGACTCCGTCTCAAAAAAAAAAAAAAAAAAAAAAAAGAAACCAC
+AGCAGCTGTGGCTGGGGAGCCCAGATGAAGTGTGGCTCTATCTTGTATGTGAGCACACCCACATTTTCACTGCCA
+				</data>
+				<hit pos="70" gap="69" motif="motif_2" pvalue="1.5e-05" strand="forward" match="++++++++"/>
+				<hit pos="78" gap="0" motif="motif_3" pvalue="9.7e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_22" db="db_1" num="22" name="jur_22" comment="" length="702">
+			<score strand="both" combined_pvalue="5.34e-03" evalue="0.8"/>
+			<seg start="151">
+				<data>
+GGGTGGGGCCTAAACCACATCAGGGTGGGGAAAGGGCCCCCCTACAGAAGCAGCTGGCCCAGCTAGACTGAGTGC
+				</data>
+				<hit pos="163" gap="162" motif="motif_2" pvalue="6.5e-05" strand="forward" match="+++++++ "/>
+				<hit pos="175" gap="4" motif="motif_4" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+				<hit pos="200" gap="18" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="226">
+				<data>
+CCATCACAGTCCCACAGCTGGTCCTTATCAGGGCGGGGCTGGGCATCCGCCCAGACCCAGGGGACTTCCTGGCTC
+				</data>
+				<hit pos="239" gap="32" motif="motif_3" pvalue="9.7e-05" strand="reverse" match="+++++++"/>
+				<hit pos="289" gap="43" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+			<seg start="301">
+				<data>
+AGTGCCACAACCCAGGGAGGTGCCCACAGTGGGAAGCAGTGCAAACATCCCCACCCCCATGTTTGGGCTCCAGCT
+				</data>
+				<hit pos="348" gap="52" motif="motif_4" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="451">
+				<data>
+TCCCGTGTCTTAAGGACAAGCAGCTGAGGCCACCCCCCCCCTCCAGCTCCCCCTTTCTGTTCCCGCCAAGCTTGG
+				</data>
+				<hit pos="470" gap="115" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="526">
+				<data>
+GAAACACCTGCTGGGGAAATCAAACCACAGACCCATCTGCTCCTCTCCACCCTGTTGCCACCCGGGCCCCAATTA
+				</data>
+				<hit pos="548" gap="71" motif="motif_2" pvalue="1.5e-05" strand="forward" match="++++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_110" db="db_1" num="110" name="jur_110" comment="" length="439">
+			<score strand="both" combined_pvalue="6.94e-03" evalue="1"/>
+			<seg start="76">
+				<data>
+CAGCCAGCTGTCATCCTGTCTGCACCCTACGGTGGCTCTGTGGGCACATCAAGCTGTGGTTTCTTCCAGCCTACT
+				</data>
+				<hit pos="80" gap="79" motif="motif_3" pvalue="9.7e-05" strand="forward" match="+++++++"/>
+				<hit pos="129" gap="42" motif="motif_2" pvalue="1.5e-05" strand="reverse" match="++++++++"/>
+			</seg>
+			<seg start="301">
+				<data>
+TTGCTACTGGTGTCTAGTGGGTAAAGCCCAGTGATGCTGCTAAGCGTCCTGCGATACACAAGACAGCCTTCAACA
+				</data>
+				<hit pos="317" gap="180" motif="motif_4" pvalue="9.7e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_129" db="db_1" num="129" name="jur_129" comment="" length="313">
+			<score strand="both" combined_pvalue="7.35e-03" evalue="1.1"/>
+			<seg start="151">
+				<data>
+TGCAGACCCACAGTAGGACTACAGCTCTCACCAGCTGCTGCCTGCGTCTCTGATAAAGATCAGCTCTGCCCACAG
+				</data>
+				<hit pos="182" gap="181" motif="motif_3" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+			</seg>
+			<seg start="226">
+				<data>
+AAAGCTGGGGTGGAGATACTTGTGGCTTGGCTCCACTTCTCTTTCCAATCTGTGCCCAACTTCCTCTTCTCCCGC
+				</data>
+				<hit pos="284" gap="95" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_124" db="db_1" num="124" name="jur_124" comment="" length="297">
+			<score strand="both" combined_pvalue="8.64e-03" evalue="1.3"/>
+			<seg start="76">
+				<data>
+TCAGCGGCCTGTGGGAAGTCTCTGTTTCAGAAAGCTCCCAAGGGCAGCAGCAAATTGGAGTCTTCATAAACCACA
+GATTTATCTTATCTATGACTAACAGATGTTGGGCACAGTTTCATGAGGTATACAAAGCAGGCAAGCAGCTCTAAA
+				</data>
+				<hit pos="144" gap="143" motif="motif_2" pvalue="1.5e-05" strand="forward" match="++++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_141" db="db_1" num="141" name="jur_141" comment="" length="362">
+			<score strand="both" combined_pvalue="8.67e-03" evalue="1.3"/>
+			<seg start="151">
+				<data>
+TGTTTGCTTTGTGGTCATCTGTTCTCAGCCAAGAGAGGCCTAAGCAGGGCGTGGGGAGCAGCTGCAAGTCACCTT
+				</data>
+				<hit pos="201" gap="200" motif="motif_4" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+				<hit pos="208" gap="0" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_131" db="db_1" num="131" name="jur_131" comment="" length="257">
+			<score strand="both" combined_pvalue="8.84e-03" evalue="1.3"/>
+			<seg start="76">
+				<data>
+ATTACAGTGATCCCAATCTGCTTATCTTCACGAGTACAAACTTGTCCCCACTAAAAGTATGCCTCACCTGTGCTT
+				</data>
+				<hit pos="120" gap="119" motif="motif_4" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="226">
+				<data>
+GCCAGCTGTCTGCTGTTCTCAGGGTTGCTTGG
+				</data>
+				<hit pos="228" gap="101" motif="motif_3" pvalue="9.7e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_4" db="db_1" num="4" name="jur_4" comment="" length="222">
+			<score strand="both" combined_pvalue="9.87e-03" evalue="1.5"/>
+			<seg start="76">
+				<data>
+GAACTGCTTCCTCCTGTGGTTTACCAGAAAACGCTCTGCGGCTAGAGCTTCAGCACAGGCTGGGTCTGCTGTGCC
+				</data>
+				<hit pos="89" gap="88" motif="motif_2" pvalue="1.5e-05" strand="reverse" match="++++++++"/>
+			</seg>
+			<seg start="151">
+				<data>
+GGGTCTGTATGGGGACAGCTGCACGCCTCTTCCGCTTGTGTGAGAACAAAGGCCGGAACCTGGATTCTGATC
+				</data>
+				<hit pos="166" gap="69" motif="motif_3" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_2" db="db_1" num="2" name="jur_2" comment="" length="305">
+			<score strand="both" combined_pvalue="1.03e-02" evalue="1.5"/>
+			<seg start="76">
+				<data>
+ATGCCTGGGACAGATGAATAGCTCAGTACACCAAGAACAGCTGCACCCAGCCTTCATTAACCACACAGCACCTTC
+				</data>
+				<hit pos="113" gap="112" motif="motif_3" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+				<hit pos="134" gap="14" motif="motif_2" pvalue="4.7e-05" strand="forward" match="+++++++ "/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_49" db="db_1" num="49" name="jur_49" comment="" length="378">
+			<score strand="both" combined_pvalue="1.05e-02" evalue="1.6"/>
+			<seg start="1">
+				<data>
+CACTCCCAAACCACACAATGTATTTTAAGGAATATGTCCCTTTTCTAAGAAACTGCTTGATTTTCAGGAAGTGGT
+				</data>
+				<hit pos="9" gap="8" motif="motif_2" pvalue="4.7e-05" strand="forward" match="+++++++ "/>
+				<hit pos="66" gap="49" motif="motif_5" pvalue="6.5e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="151">
+				<data>
+GATAAACAGCTGCGAGCTGCACGCGGGAGGGAAAAGGATCGTAAAGACTGCCCCTATGTCTGCCTGACACTTTCT
+				</data>
+				<hit pos="157" gap="84" motif="motif_3" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_25" db="db_1" num="25" name="jur_25" comment="" length="233">
+			<score strand="both" combined_pvalue="1.08e-02" evalue="1.6"/>
+			<seg start="1">
+				<data>
+CATATTTTTAAATGAAAATAACTTTTTGTGGCAAATCTCTTTAATTGTCTGGTTTATGAGAAGGCAGCTGGATTC
+				</data>
+				<hit pos="64" gap="63" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="76">
+				<data>
+TTATCTCTGCTTCAGCATGCAAACTGTTGCAATATGTTGTTGTGGTTTAACTATGTGAAGAAAATAAATTTGCCA
+				</data>
+				<hit pos="115" gap="44" motif="motif_2" pvalue="3.2e-05" strand="reverse" match="++++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_119" db="db_1" num="119" name="jur_119" comment="" length="455">
+			<score strand="both" combined_pvalue="1.13e-02" evalue="1.7"/>
+			<seg start="76">
+				<data>
+GATGTGGTTAGAACAAACCTATGCTCTACAGTGGCGTGGCTTCTGCAGCAGGTGCTACTTTCGTGAAGGAGGTCC
+				</data>
+				<hit pos="77" gap="76" motif="motif_2" pvalue="6.5e-05" strand="reverse" match=" +++++++"/>
+			</seg>
+			<seg start="301">
+				<data>
+AGACCAGTTTGTGCAGCTGATGGCACCGGAGCAGAGGGTGTCCTCTTATCAGATACCAGCACAGTGACTGCTGAC
+				</data>
+				<hit pos="313" gap="228" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_74" db="db_1" num="74" name="jur_74" comment="" length="301">
+			<score strand="both" combined_pvalue="1.13e-02" evalue="1.7"/>
+			<seg start="151">
+				<data>
+GCTTCTAGTTTCTCTTTGAAGTAGGGCATATAGTTATCTGCTGAGTTTGAGGAAGTATGTTGTGGGGAAGAACAT
+				</data>
+				<hit pos="200" gap="199" motif="motif_5" pvalue="6.5e-05" strand="reverse" match="+++++++"/>
+				<hit pos="212" gap="5" motif="motif_4" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_10" db="db_1" num="10" name="jur_10" comment="" length="372">
+			<score strand="both" combined_pvalue="1.26e-02" evalue="1.9"/>
+			<seg start="76">
+				<data>
+CAGGGGGGAATAGGAAGTTAGTGTTTAACGGGTGCAGAGTTTCAGTTGGGAGAGATAAAAAAGTTCTAGAAGTGG
+				</data>
+				<hit pos="87" gap="86" motif="motif_5" pvalue="6.5e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="151">
+				<data>
+ATGGTGGCAGTGGTTAACTAACCACATGAATGTACTTAGTGCCACTGAACCCGTGCACTCGTACACTAAAAACAG
+				</data>
+				<hit pos="170" gap="76" motif="motif_2" pvalue="6.5e-05" strand="forward" match="+++++++ "/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_47" db="db_1" num="47" name="jur_47" comment="" length="647">
+			<score strand="both" combined_pvalue="1.31e-02" evalue="2"/>
+			<seg start="76">
+				<data>
+ACATTTGCTTGCCATGAGGAAGAACATCAAACAGGGAAACAGCTGTTATCAGGCATCTGTTCATTTTTCAAATCC
+				</data>
+				<hit pos="114" gap="113" motif="motif_3" pvalue="9.7e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="151">
+				<data>
+TTCACCTGTTGTGAAGACCCATCCTTCAACCACAGCTCTGTGTGCTTGAAGATGGAGAGGGGACTAGAAGAGAAG
+				</data>
+				<hit pos="178" gap="57" motif="motif_2" pvalue="1.5e-05" strand="forward" match="++++++++"/>
+			</seg>
+			<seg start="526">
+				<data>
+TTTTGTGATAACAACTTCAAATAGTATAGGCCTACTCCGAACATTCCCACTTCCTTTAAACAGCCATTACCCAGG
+				</data>
+				<hit pos="574" gap="388" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_9" db="db_1" num="9" name="jur_9" comment="" length="643">
+			<score strand="both" combined_pvalue="1.34e-02" evalue="2"/>
+			<seg start="1">
+				<data>
+CAAGAGCAGGCACAGATGAGACCGGCGAGGTGGGTACTATCATGTTTTGTGTATTGTTGATGTGAAAGCGAGCCT
+				</data>
+				<hit pos="30" gap="29" motif="motif_4" pvalue="9.7e-05" strand="forward" match="+++++++"/>
+			</seg>
+			<seg start="151">
+				<data>
+CCTCTGTGTTCCACTGGCAGATTCTGCCAAACAGTAACAAAAACAGTAGCTGGCATGAAGCACTTATTGAGAGCC
+AGCTGCCACACTAAAGCCCTTCATGTGGTTTAACCCATTTCATCTTCTCAACAGCCCTGGAGCAAGGGGTGGTAC
+				</data>
+				<hit pos="225" gap="188" motif="motif_3" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+				<hit pos="248" gap="16" motif="motif_2" pvalue="6.5e-05" strand="reverse" match=" +++++++"/>
+			</seg>
+			<seg start="376">
+				<data>
+CATAGGAAGTGGAACAAAACCCAGGCTGGACCCCCAGTGCCCTTAACTGTGACGAGATCACCTCCATCCAACCTT
+				</data>
+				<hit pos="379" gap="123" motif="motif_5" pvalue="6.5e-05" strand="reverse" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_50" db="db_1" num="50" name="jur_50" comment="" length="194">
+			<score strand="both" combined_pvalue="1.35e-02" evalue="2"/>
+			<seg start="1">
+				<data>
+TGTATGTCTCAACAAAAGGCAGCTGCAACCACACTGCTCAAACAGTATTAACGTCAGGGCTCTAGGCCAAAACTT
+				</data>
+				<hit pos="19" gap="18" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+				<hit pos="27" gap="1" motif="motif_2" pvalue="4.7e-05" strand="forward" match="+++++++ "/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_12" db="db_1" num="12" name="jur_12" comment="" length="419">
+			<score strand="both" combined_pvalue="1.52e-02" evalue="2.3"/>
+			<seg start="76">
+				<data>
+AGTTTCTGCAACAACCACTCACCTGTGCTGTTGAAGTGTGAAAACAGCTGTGCACAGGACATGAAAGAATGGGCA
+				</data>
+				<hit pos="119" gap="118" motif="motif_3" pvalue="9.7e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="226">
+				<data>
+TCTCAATTTCAAGCATCCCACTTCCCCCCACCCCTACTTCCTCCTGTCTTTCTCCCTCAGTGGCACCTGCAGCTG
+				</data>
+				<hit pos="261" gap="135" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+				<hit pos="294" gap="26" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_85" db="db_1" num="85" name="jur_85" comment="" length="218">
+			<score strand="both" combined_pvalue="1.58e-02" evalue="2.4"/>
+			<seg start="1">
+				<data>
+CACTTAGTTTTCATTCAAAGCTCAAGCCTGTTGCAGGTGCAAAGCCTACATCTGGGCAGGGATTGTGGTTGGCTT
+				</data>
+				<hit pos="63" gap="62" motif="motif_2" pvalue="3.2e-05" strand="reverse" match="++++++++"/>
+			</seg>
+			<seg start="76">
+				<data>
+CTTTCCACCTCCTACTCTGTGGTTTCTGTTTCCTGGTAAGGGAGATAGAGGGACAAATGAAAGCTAAGGGGAACT
+				</data>
+				<hit pos="92" gap="21" motif="motif_2" pvalue="1.5e-05" strand="reverse" match="++++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_138" db="db_1" num="138" name="jur_138" comment="" length="453">
+			<score strand="both" combined_pvalue="1.67e-02" evalue="2.5"/>
+			<seg start="76">
+				<data>
+GCATGTGTGCAGCTGTGGGCTAGAGGGTTGAAAGCAGGTCCTGTGTCTCTTTCCTGGTGAACTCCACAGGGACAC
+AGCTGCAGGTCTTTTGTAACGCTCTGTATATGCACAGGAAGTCCCTTACAACCCACTCTGTTAGATCTCATTTCC
+				</data>
+				<hit pos="84" gap="83" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+				<hit pos="150" gap="59" motif="motif_3" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+				<hit pos="186" gap="29" motif="motif_5" pvalue="6.5e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="301">
+				<data>
+TTGGTGCCCTCTTGTGGTCTGCCTTTGATGTGGTTGGGATCTTGGGAGCTGAAGGCAAAGAAAGGACAAGTGAGC
+				</data>
+				<hit pos="328" gap="135" motif="motif_2" pvalue="6.5e-05" strand="reverse" match=" +++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_64" db="db_1" num="64" name="jur_64" comment="" length="252">
+			<score strand="both" combined_pvalue="1.67e-02" evalue="2.5"/>
+			<seg start="151">
+				<data>
+CCAACAACCCGTCCCCAGCTGCTCTGACTTTTCGGGTGATAAATTTCAGCAGGTTAGAACACGTCCTGCCAAACC
+				</data>
+				<hit pos="166" gap="165" motif="motif_3" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_132" db="db_1" num="132" name="jur_132" comment="" length="246">
+			<score strand="both" combined_pvalue="1.69e-02" evalue="2.5"/>
+			<seg start="76">
+				<data>
+TTGCCACCTCCAGCTGTAGTGCCTGTGGTTGCCAGCCTTTGTATCTGCCACCTCCAGCTGTTATCTGCTGCTCCC
+AGCTGTTGTGCCACCTCCCACAGCCAGGCAGCTTTGTTCTCTGCGGTGGCCAGAGTCAGAAGCGGATAAACAATC
+				</data>
+				<hit pos="86" gap="85" motif="motif_3" pvalue="9.7e-05" strand="forward" match="+++++++"/>
+				<hit pos="98" gap="5" motif="motif_2" pvalue="1.5e-05" strand="reverse" match="++++++++"/>
+				<hit pos="130" gap="24" motif="motif_3" pvalue="9.7e-05" strand="forward" match="+++++++"/>
+				<hit pos="150" gap="13" motif="motif_3" pvalue="9.7e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_26" db="db_1" num="26" name="jur_26" comment="" length="292">
+			<score strand="both" combined_pvalue="1.75e-02" evalue="2.6"/>
+		</sequence>
+		<sequence id="seq_1_112" db="db_1" num="112" name="jur_112" comment="" length="330">
+			<score strand="both" combined_pvalue="1.76e-02" evalue="2.6"/>
+			<seg start="76">
+				<data>
+GACATTCAAAGGCATCGAGTGAAATCTTCTTTGTGGTTTTTATTCTCCCCGCAGAGCTGGGTAGGAAGACATTTG
+				</data>
+				<hit pos="106" gap="105" motif="motif_2" pvalue="3.2e-05" strand="reverse" match="++++++++"/>
+			</seg>
+			<seg start="226">
+				<data>
+AGACCTTATCTCTCGGGAGATCCTGCTCCAGTGGGGAAGGGAGGCGAGGGTGCCCCCAAAGCGGCCTCCCTCGCA
+				</data>
+				<hit pos="256" gap="142" motif="motif_4" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_6" db="db_1" num="6" name="jur_6" comment="" length="493">
+			<score strand="both" combined_pvalue="1.80e-02" evalue="2.7"/>
+			<seg start="76">
+				<data>
+GTCAGCCCAGCTTTTGTCTCTCACATGAGCCCGAGACAGACAAACCACAACCACAGACTCGACCAGCTGTGGAAG
+				</data>
+				<hit pos="124" gap="123" motif="motif_2" pvalue="1.5e-05" strand="forward" match="++++++++"/>
+				<hit pos="139" gap="7" motif="motif_3" pvalue="9.7e-05" strand="forward" match="+++++++"/>
+			</seg>
+			<seg start="151">
+				<data>
+CGTCGAACAGGAAACCCAGAACATCTGGTGCTCCACTTCCTCTGAGGGCTGTGCACGTCTGGGGGGCCAGGTGCG
+				</data>
+				<hit pos="185" gap="39" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+			<seg start="301">
+				<data>
+CTGGAAACCACAGGTCTTGTGGTGACAAGGAAGCCAGACACTGGCTCCCCAACCCTTACAGCACGGCATCCCTCC
+				</data>
+				<hit pos="306" gap="114" motif="motif_2" pvalue="1.5e-05" strand="forward" match="++++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_140" db="db_1" num="140" name="jur_140" comment="" length="366">
+			<score strand="both" combined_pvalue="1.88e-02" evalue="2.8"/>
+			<seg start="1">
+				<data>
+TGTTCATAGTGATAAAGTTGATTTACATTCTGGAATAGGCTTCTTATCTCAGTAATAAACAGGTCTCAGGAGGCA
+GCTGAGTCTTGTACATTCCTACCTATTCTGTGGTTTGTGGATAAATTTTATGCCCAGCTTCCTTCCGGTTTCAGC
+				</data>
+				<hit pos="73" gap="72" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+				<hit pos="103" gap="23" motif="motif_2" pvalue="1.5e-05" strand="reverse" match="++++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_96" db="db_1" num="96" name="jur_96" comment="" length="233">
+			<score strand="both" combined_pvalue="1.94e-02" evalue="2.9"/>
+			<seg start="76">
+				<data>
+AGTTCTCAGTCTTCAAAAGACCACATTGCCACTGCTGACACTGCTCAGTCCCTGACTTCCTGTCAACTGCTCGAC
+				</data>
+				<hit pos="130" gap="129" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_62" db="db_1" num="62" name="jur_62" comment="" length="428">
+			<score strand="both" combined_pvalue="1.98e-02" evalue="3"/>
+			<seg start="151">
+				<data>
+AAGCCAGCTGCAGCCCCCTCCCCCATTCCACCTTGTGTTTCCTCTGGCCAGAGGGAAAAGGAAGTTTGTCACGTT
+				</data>
+				<hit pos="155" gap="154" motif="motif_3" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+				<hit pos="209" gap="47" motif="motif_5" pvalue="6.5e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="226">
+				<data>
+TCAGCTGATAGACCCACTTCCTGAGCCAGCCCAAGGTGCTGGTGCACACATGGCCCAGCTCTCCCATGCGGAGAC
+				</data>
+				<hit pos="241" gap="25" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+			<seg start="301">
+				<data>
+CTGCTTAATACCCTCTAGTCACATCTGGGACATATTTAAAATTACCTCTAACCACAACTGCAAAGTAAGATCGCA
+				</data>
+				<hit pos="350" gap="102" motif="motif_2" pvalue="3.2e-05" strand="forward" match="++++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_34" db="db_1" num="34" name="jur_34" comment="" length="426">
+			<score strand="both" combined_pvalue="2.03e-02" evalue="3"/>
+			<seg start="151">
+				<data>
+GTGTTTCTGGTCTTTTATTATAGCGGCCGCAGGGAACAAATACAGCTGCTCAGTGGAAGCAACAGCTGAGCCTGG
+				</data>
+				<hit pos="193" gap="192" motif="motif_3" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+				<hit pos="212" gap="12" motif="motif_3" pvalue="9.7e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="226">
+				<data>
+GGCCCCGTCGCTGGAGCCCAACACACTCCACCGAGACCACAGTCCCCATCTGCACAAGTGCAGCCCTTACTTCCT
+				</data>
+				<hit pos="294" gap="75" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_109" db="db_1" num="109" name="jur_109" comment="" length="210">
+			<score strand="both" combined_pvalue="2.11e-02" evalue="3.2"/>
+			<seg start="76">
+				<data>
+GCTAAACCTTGTTACACTCTGGCAGGAAGCTCTGAGGGCTAAACCACAAAAACTAAGTACATTCAGGACTTCCTG
+				</data>
+				<hit pos="117" gap="116" motif="motif_2" pvalue="3.2e-05" strand="forward" match="++++++++"/>
+				<hit pos="143" gap="18" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_118" db="db_1" num="118" name="jur_118" comment="" length="255">
+			<score strand="both" combined_pvalue="2.12e-02" evalue="3.2"/>
+			<seg start="1">
+				<data>
+GTAGCTCCTCCTATGAGGGGAAATACGGTAGAGGCAAAGTCCTCCATCCTCCTCTAATCGAGCCTCTCACAGCTG
+				</data>
+				<hit pos="69" gap="68" motif="motif_3" pvalue="9.7e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="151">
+				<data>
+TGTCCAGGTGCCCTATGCCACAGAGAGGAAGTGGTAGGAGCAGGGGAGGGGCTGCAACCCAGGGGGATCTCTCCT
+				</data>
+				<hit pos="176" gap="100" motif="motif_5" pvalue="6.5e-05" strand="reverse" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_73" db="db_1" num="73" name="jur_73" comment="" length="277">
+			<score strand="both" combined_pvalue="2.27e-02" evalue="3.4"/>
+			<seg start="76">
+				<data>
+TACAGTATCTGGAACTAGGTGGAAACTTAAAACTCAGCAGCTGTCTTATCACCATGAAAAGATGTCAAGAGCACA
+				</data>
+				<hit pos="112" gap="111" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="151">
+				<data>
+AAGAGATGGTGACACTAATATGGCTAAGCCACTAAACCACTGTTAGCAGCTGCTTATCTCCATACATCTTATAGT
+				</data>
+				<hit pos="196" gap="77" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_46" db="db_1" num="46" name="jur_46" comment="" length="249">
+			<score strand="both" combined_pvalue="2.44e-02" evalue="3.7"/>
+			<seg start="1">
+				<data>
+TGGAAGTTAGGGCAGCTTAACCGGCTCTAGTGGTTTCGTCTCTTATCTTTTTTCCCCAGCTGCTGGTCAGGGGCT
+				</data>
+				<hit pos="57" gap="56" motif="motif_3" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_111" db="db_1" num="111" name="jur_111" comment="" length="189">
+			<score strand="both" combined_pvalue="2.54e-02" evalue="3.8"/>
+			<seg start="76">
+				<data>
+CCCTAGCTTCCTTCCCCTCTCGGTTTGCATTAGACTGTGGCCAAACCACAACCCAGTTCAAAGGCAGCTTTCTGC
+				</data>
+				<hit pos="119" gap="118" motif="motif_2" pvalue="3.2e-05" strand="forward" match="++++++++"/>
+			</seg>
+			<seg start="151">
+				<data>
+AGCCTCCCTACCTGTGCCCACAGAGCTAATGTGGTTGGA
+				</data>
+				<hit pos="179" gap="52" motif="motif_2" pvalue="6.5e-05" strand="reverse" match=" +++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_142" db="db_1" num="142" name="jur_142" comment="" length="241">
+			<score strand="both" combined_pvalue="2.69e-02" evalue="4"/>
+			<seg start="76">
+				<data>
+AATGAAACTAGCGCCTTTATCAGTCAGAAACCACCAACAGAAGTTAGTTTGTGGTTGCTGACTGGTAAAGACTCT
+				</data>
+				<hit pos="124" gap="123" motif="motif_2" pvalue="3.2e-05" strand="reverse" match="++++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_135" db="db_1" num="135" name="jur_135" comment="" length="399">
+			<score strand="both" combined_pvalue="2.78e-02" evalue="4.2"/>
+			<seg start="151">
+				<data>
+AAACCCAGCTGCTGCCTGCCTGGCACCCTTTGATGAACTGCCCTACCCAAGAGTTTCAAGCCCACACACCCAGAC
+TTCCTGCCTCTCTTATCTCAATTCTTAATGGCCCAGGCAACACAGTCCTGCACAGCAATGCTTCCCAAAAGTTCT
+				</data>
+				<hit pos="156" gap="155" motif="motif_3" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+				<hit pos="224" gap="61" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_81" db="db_1" num="81" name="jur_81" comment="" length="309">
+			<score strand="both" combined_pvalue="2.85e-02" evalue="4.3"/>
+			<seg start="1">
+				<data>
+AACATATAGCCACATACCCACACTATTCTGCCACTGAACCCAAATAAGCTTGCAAATAAAGTTAGTATCCCTCTC
+				</data>
+				<hit pos="15" gap="14" motif="motif_4" pvalue="9.7e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="76">
+				<data>
+TTCCTCCTCCTGAGGTGCTCACAGGCTGCTCAGTCAAGATTGGGCACTTGCAAACCACATGACCTCATGAATGCT
+				</data>
+				<hit pos="128" gap="106" motif="motif_2" pvalue="6.5e-05" strand="forward" match="+++++++ "/>
+			</seg>
+			<seg start="226">
+				<data>
+TTTGACACGTACTATTGGCATGACATTTCTAGCTGTCCAGCTTGTGGGGAGTGAAAATCTGACTATCTCGTGTCC
+				</data>
+				<hit pos="269" gap="133" motif="motif_4" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_106" db="db_1" num="106" name="jur_106" comment="" length="610">
+			<score strand="both" combined_pvalue="2.97e-02" evalue="4.5"/>
+			<seg start="76">
+				<data>
+CCCGCCTTCTTTGGTTCACCTTCCAGCCTCACGGCTCCTCTTTGCTTCAGTTGAGGAGCCAAGCATGTCCCACTC
+TGTGGTTCACTAATCAGTCATCATTCCCCAACGTCGCAACTCAACGTCTGCCTAAAAGTCTGTTTCCCCCTTTAT
+				</data>
+				<hit pos="150" gap="149" motif="motif_2" pvalue="1.5e-05" strand="reverse" match="++++++++"/>
+			</seg>
+			<seg start="301">
+				<data>
+ATTTCCTTGCTGCTTTTGGAAATCGCTGATAGCACTTCCTCCTTGGTGCAATCAGAGGAGTCCCTGTGTGGTACA
+				</data>
+				<hit pos="334" gap="176" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_122" db="db_1" num="122" name="jur_122" comment="" length="270">
+			<score strand="both" combined_pvalue="3.24e-02" evalue="4.9"/>
+			<seg start="1">
+				<data>
+GAGGAGGTGATAATGGAAGCCCTAGTAATGGGGGGTGGGGATGGCAGGGAACTTATAAGCCTTTCGAGAAGGGTG
+				</data>
+				<hit pos="35" gap="34" motif="motif_4" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_51" db="db_1" num="51" name="jur_51" comment="" length="166">
+			<score strand="both" combined_pvalue="3.46e-02" evalue="5.2"/>
+		</sequence>
+		<sequence id="seq_1_100" db="db_1" num="100" name="jur_100" comment="" length="218">
+			<score strand="both" combined_pvalue="3.51e-02" evalue="5.3"/>
+			<seg start="1">
+				<data>
+TGGTGGAATTATAGAGTAGTATCATTTGTAACTGAAATGTCTTCTAGGGTTGCTATGCGAAAGCAAGACTGTGGT
+TTCATTCCAATTTCCTGTATATCGGAATCATCACCATCTGTGTATGTGTGATTGAGGTAAGAGCTTAACCACAGG
+				</data>
+				<hit pos="69" gap="68" motif="motif_2" pvalue="1.5e-05" strand="reverse" match="++++++++"/>
+				<hit pos="142" gap="65" motif="motif_2" pvalue="1.5e-05" strand="forward" match="++++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_136" db="db_1" num="136" name="jur_136" comment="" length="302">
+			<score strand="both" combined_pvalue="3.53e-02" evalue="5.3"/>
+			<seg start="76">
+				<data>
+GGCACAGGGCCGCAGTGGTCTCACAGCACATGATGCGATGGGGATCGAGCCCAGCCTCCCTCCCACTCTGTGGGG
+AACGACCACAAATGAGGTTTTAGCAGCACACTGATAAGCAGAGCAGCTCTGCTAAGCCACAGATAAGACTCTGGA
+				</data>
+				<hit pos="145" gap="144" motif="motif_4" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_17" db="db_1" num="17" name="jur_17" comment="" length="280">
+			<score strand="both" combined_pvalue="3.66e-02" evalue="5.5"/>
+			<seg start="1">
+				<data>
+ATTGAAGGGAACACAAAGAGCAGTTTCTGGAACACATACCCCTCCCCACAAGCTAGGCTTGGCACCAGGGTGGCT
+				</data>
+				<hit pos="43" gap="42" motif="motif_4" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="151">
+				<data>
+CTTATCAGTACACTTAGGCTGCCAGATGCTGGCTGAAAGCCAGGACCCAGGGCCAGCTGCAGCAGGCTTTGTGCC
+				</data>
+				<hit pos="204" gap="154" motif="motif_3" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_121" db="db_1" num="121" name="jur_121" comment="" length="423">
+			<score strand="both" combined_pvalue="3.67e-02" evalue="5.5"/>
+			<seg start="151">
+				<data>
+TGCTCATCACCAGGTCTGGGCACAATCTGCACCAATTTTCCCCAGGCAGCTGCGGTTGATGCCCACGAAGGCACA
+				</data>
+				<hit pos="196" gap="195" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_67" db="db_1" num="67" name="jur_67" comment="" length="151">
+			<score strand="both" combined_pvalue="3.86e-02" evalue="5.8"/>
+			<seg start="76">
+				<data>
+ACCTTGATAAGGAGGGTCTTTTCGCTAGGGGACCTTATCTGTGGGAGCAGAGTGGGGAGGAAGAATTTTAGTTGG
+				</data>
+				<hit pos="127" gap="126" motif="motif_4" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_91" db="db_1" num="91" name="jur_91" comment="" length="349">
+			<score strand="both" combined_pvalue="3.87e-02" evalue="5.8"/>
+			<seg start="76">
+				<data>
+ATTATCACACTGCCTCTCTAAAAGTGATAACTTGGCAGCTGATGCAAGGGAAAAGCCACTTCCTGATGGTCCACA
+				</data>
+				<hit pos="110" gap="109" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+				<hit pos="133" gap="16" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_108" db="db_1" num="108" name="jur_108" comment="" length="424">
+			<score strand="both" combined_pvalue="4.03e-02" evalue="6"/>
+			<seg start="151">
+				<data>
+CATCAAGATGAGGAAGTGGGCCTCCAAAATATCAAGGGAAGAGTGTTTCTGGGAAAGGAATATCAAACGCAAAGG
+				</data>
+				<hit pos="161" gap="160" motif="motif_5" pvalue="6.5e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="226">
+				<data>
+CACTGAGTCAGGAGCAGGCCTGAGCTGTTCAAAGAAGAGCAGCTGTCCTGGGAGAGGTGGTGGGGCTCCAGGTTG
+				</data>
+				<hit pos="264" gap="96" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_120" db="db_1" num="120" name="jur_120" comment="" length="485">
+			<score strand="both" combined_pvalue="4.32e-02" evalue="6.5"/>
+			<seg start="301">
+				<data>
+GAGGAGAGGCAGAATGCCAGAACCAGTTAAGTGAGAAAGATCAGGTCATGGCTTAAAAAAATATGTCTGTGGTTT
+				</data>
+				<hit pos="367" gap="366" motif="motif_2" pvalue="1.5e-05" strand="reverse" match="++++++++"/>
+			</seg>
+			<seg start="451">
+				<data>
+TTTATTGATTGTGGGTAAGGTGGTGTAATTGAATT
+				</data>
+				<hit pos="461" gap="86" motif="motif_4" pvalue="9.7e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_84" db="db_1" num="84" name="jur_84" comment="" length="308">
+			<score strand="both" combined_pvalue="4.63e-02" evalue="6.9"/>
+			<seg start="1">
+				<data>
+CTCAAAAAAAAAAGTCATAATAATAGAACTAGCCTCTGTCCTGAGCTTGGGAGGGCAATAACTTCCTGGATGGTT
+				</data>
+				<hit pos="61" gap="60" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_114" db="db_1" num="114" name="jur_114" comment="" length="426">
+			<score strand="both" combined_pvalue="4.89e-02" evalue="7.3"/>
+			<seg start="376">
+				<data>
+TGATTCCAGCTTTTTGCTATCTTTGGTGTGTATGGTGGGGACGGGGCAATG
+				</data>
+				<hit pos="410" gap="409" motif="motif_4" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_38" db="db_1" num="38" name="jur_38" comment="" length="524">
+			<score strand="both" combined_pvalue="4.91e-02" evalue="7.4"/>
+			<seg start="76">
+				<data>
+CTGAGTGTGCAGCTGTCTGAAAGCACACACTTATGCCAGTGTAATCAGTTATGTTTCCGCTCTTTGTTTCTGCAT
+				</data>
+				<hit pos="84" gap="83" motif="motif_3" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+			<seg start="226">
+				<data>
+GCTTTGTGGTTTGGAACATGTGTTTCAGTACATATCTCTCACCATGTCACATGCACTGGCTCTGCTAGCTTCCAC
+				</data>
+				<hit pos="229" gap="138" motif="motif_2" pvalue="3.2e-05" strand="reverse" match="++++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_104" db="db_1" num="104" name="jur_104" comment="" length="447">
+			<score strand="both" combined_pvalue="5.02e-02" evalue="7.5"/>
+			<seg start="151">
+				<data>
+AATAGGGAGGGTGGGGGCTGGTGCCCCGCCTCTGTGGGGAACCCCTGGGCCTGGCATTCAGGGTGCTTCCTGGGG
+				</data>
+				<hit pos="184" gap="183" motif="motif_4" pvalue="4.4e-05" strand="forward" match="+++++++"/>
+			</seg>
+			<seg start="376">
+				<data>
+CCTGAGGTGGGTATTTATTTCCTGCTGTTCTAGCTCTACCACCTCCTCCCTTTCCCTTTTCTCTAAAAGAAT
+				</data>
+				<hit pos="382" gap="191" motif="motif_4" pvalue="9.7e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_125" db="db_1" num="125" name="jur_125" comment="" length="543">
+			<score strand="both" combined_pvalue="5.04e-02" evalue="7.6"/>
+			<seg start="151">
+				<data>
+CCCCCATCACTGCCAGGGATCTGTTCTCTAATCATCTGACCTCCAGCATCCCCACTCGCTTTACCCACTTCCTCA
+				</data>
+				<hit pos="199" gap="198" motif="motif_4" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+				<hit pos="217" gap="11" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+			<seg start="376">
+				<data>
+CCATTCTGGCTGCCCCCACCTCCCTCCAGTGTCGCCTGAGCTCTCTCCAATCCCCTGAGGTCTAGCTTCTTTCCC
+CACCTTTCTGCTCAAATGGCTCTCTCCGAAACTACCCATAAACCCCTAATGCCAAATCTGACCTTGGTGTGTGTA
+				</data>
+				<hit pos="447" gap="223" motif="motif_4" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_150" db="db_1" num="150" name="jur_150" comment="" length="553">
+			<score strand="both" combined_pvalue="5.47e-02" evalue="8.2"/>
+			<seg start="76">
+				<data>
+CCTCCATCTGTGATGAAGGAACCAGAATACCTGCAACAACCACGCAAACTCACAACCACAACTGCCACAAACCAC
+ACAACAACCATAGCTGCAACAACCACAGCCATTTGACCACACACCACAAGTGCAGTAACTACCAGAACTGCAGCA
+ACCACACAAGCCACAACAGCAGCAACCACAACACCCGCACAACCACACATCCACAGGGGCCATTAGCTGCTGTTT
+				</data>
+				<hit pos="129" gap="128" motif="motif_2" pvalue="3.2e-05" strand="forward" match="++++++++"/>
+				<hit pos="145" gap="8" motif="motif_2" pvalue="4.7e-05" strand="forward" match="+++++++ "/>
+				<hit pos="171" gap="18" motif="motif_2" pvalue="1.5e-05" strand="forward" match="++++++++"/>
+				<hit pos="225" gap="46" motif="motif_2" pvalue="4.7e-05" strand="forward" match="+++++++ "/>
+				<hit pos="249" gap="16" motif="motif_2" pvalue="3.2e-05" strand="forward" match="++++++++"/>
+				<hit pos="266" gap="9" motif="motif_2" pvalue="4.7e-05" strand="forward" match="+++++++ "/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_123" db="db_1" num="123" name="jur_123" comment="" length="449">
+			<score strand="both" combined_pvalue="5.57e-02" evalue="8.3"/>
+			<seg start="1">
+				<data>
+TATGTAAAAGTAAATTCTTTTCCCTATTCCTTTCAAGGCTCTGATGTTTTTTAAAACTCTGACAGTTCATTTTCA
+CTTCCTTTCATTCACAGATTTCATTAGGGGTCACAGTCCAGTGACCTTCAGGGTCACAGCCTGGCCAGGGTACAC
+				</data>
+				<hit pos="75" gap="74" motif="motif_5" pvalue="6.5e-05" strand="forward" match="+++++++"/>
+			</seg>
+			<seg start="151">
+				<data>
+CCTCCCCACACGGAGGGCCTTATCTCTGTAAGCAGAGAAGCAGGAAGCGGAGCCAGGCTTTCCTGTTCCAGCTCG
+				</data>
+				<hit pos="153" gap="71" motif="motif_4" pvalue="4.4e-05" strand="reverse" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_37" db="db_1" num="37" name="jur_37" comment="" length="563">
+			<score strand="both" combined_pvalue="5.91e-02" evalue="8.9"/>
+			<seg start="151">
+				<data>
+GATACTGGGGGTTGTCTGCACAGAGTCTTGTGATGTGAACCATCTGCAGTTCTGTCAGCTGTGGATACCAGCACC
+				</data>
+				<hit pos="206" gap="205" motif="motif_3" pvalue="9.7e-05" strand="forward" match="+++++++"/>
+			</seg>
+			<seg start="376">
+				<data>
+GTGGTGGGCAGGGCCCGAGAACTCCCAAGAGTATATGCCCTTTGTCTTTAACTGCCAGGGTGGGTATGGAAGGAC
+				</data>
+				<hit pos="435" gap="222" motif="motif_4" pvalue="9.7e-05" strand="forward" match="+++++++"/>
+			</seg>
+		</sequence>
+		<sequence id="seq_1_16" db="db_1" num="16" name="jur_16" comment="" length="389">
+			<score strand="both" combined_pvalue="5.97e-02" evalue="9"/>
+			<seg start="76">
+				<data>
+TTTCCTGTGGGTACAAGTCCAGTATCTGCATTTAGAAGATAAGGCGGGGTTGGGGGGTAACCCTGCTCACTCAAG
+				</data>
+				<hit pos="82" gap="81" motif="motif_4" pvalue="9.7e-05" strand="forward" match="+++++++"/>
+			</seg>
+			<seg start="151">
+				<data>
+GCTGCTGTCAGCCCATGTGTCCCCCTGTGCAAGTGAGACAAGCTGCACACCTGGCAAGCACACCACAGCTGGATT
+				</data>
+				<hit pos="215" gap="126" motif="motif_3" pvalue="9.7e-05" strand="reverse" match="+++++++"/>
+			</seg>
+		</sequence>
+	</sequences>
+	<runtime cycles="17370" seconds="0.017"/>
+</mast>
