@@ -1,10 +1,14 @@
 package ca.uottawa.okorol.bioinf.ModuleInducer.tools;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
 import ca.uottawa.okorol.bioinf.ModuleInducer.exceptions.DataFormatException;
 import ca.uottawa.okorol.bioinf.ModuleInducer.properties.SystemVariables;
 
@@ -142,6 +146,28 @@ public class FileHandling {
 	}
 	
 	
+	public static boolean fileContains(String fileName, String containingSequence) throws DataFormatException{
+		
+		File file = new File(fileName);
+
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			String line;
+			
+			while ((line = br.readLine()) != null){
+				if (line.contains(containingSequence)) return true;
+			}
+		
+			br.close();
+		}catch (NumberFormatException e){
+			throw new DataFormatException("Can not parse data in " + file.getAbsolutePath() + " file.");
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		return false;
+	}
 	
 	
 

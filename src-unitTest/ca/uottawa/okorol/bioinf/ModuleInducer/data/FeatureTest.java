@@ -65,5 +65,31 @@ public class FeatureTest extends TestCase {
 				
 		
 	}
+	
+	public void testEqual(){
+		Feature f1 = new Feature();
+		Feature f2 = new Feature();
+		
+		assertTrue(f1.equals(f2));
+		assertFalse(f1==f2);
+		
+		f1.setId("123");
+		f2.setId("123");
+		
+		f1.setScore(Double.parseDouble("4.4e-05"));
+		f2.setScore(4.4e-05);
+		
+		f1.setName("test");
+		f2.setName("test");
+
+		f1.setEndPosition(3);
+		f2.setEndPosition(3);
+		
+		assertTrue(f1.equals(f2));
+		
+		f1.setNote("Note");
+		
+		assertFalse(f1.equals(f2));
+	}
 
 }

@@ -2,6 +2,8 @@ package ca.uottawa.okorol.bioinf.ModuleInducer.tools;
 
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import junit.framework.TestCase;
 import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
@@ -20,6 +22,14 @@ public class DataFormatterTest extends TestCase {
 		
 		
 		ArrayList<Feature> actual = DataFormatter.extractRegElementsFromXml("./data/testData/mast_short.xml");
+		System.out.println("Number of features : " + actual.size());
+		FeaturesTools.printFeatures(actual);
+		FeaturesTools.printFeatures(expected);
+		
+		assertTrue(expected.containsAll(actual));
+		assertTrue(actual.containsAll(expected));
+		
+		
 		
 		assertTrue(expected.equals(actual));
 	}

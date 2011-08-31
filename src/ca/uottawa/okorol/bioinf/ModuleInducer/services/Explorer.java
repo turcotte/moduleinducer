@@ -86,32 +86,8 @@ public class Explorer{
 					regulatoryRegionService.getPositiveRegulatoryRegions(), regulatoryRegionService.getNegativeRegulatoryRegions(), positiveCutOffScore);
 		}
 
-		//**** Print notes
-		SystemVariables.getInstance().appendToExperimentNotes("\\n* Number of PSSM matches in positive sequences: ");
-		//System.out.println("Total number of PSSM matches in positive sequences: ");
+		addMotifMatchingStatisticsToNotes("positive");
 
-		Hashtable<String, Double> pssmMatchStats = regulatoryElementService.getPssmMatchingStatistics();
-		Enumeration<String> pssmMatchNames = pssmMatchStats.keys();
-		int numReg = regulatoryRegionService.getPositiveRegulatoryRegions().size();
-		int totalNumMatches = 0;
-		String r_pssmNames = "";
-		String r_matches = "";
-		while(pssmMatchNames.hasMoreElements()){
-			String pssmName = pssmMatchNames.nextElement();
-			double pssmStat = pssmMatchStats.get(pssmName);
-			int numMatches = (int)(pssmStat*numReg);
-			totalNumMatches = totalNumMatches + numMatches;
-			
-			r_pssmNames = r_pssmNames + "\'" + pssmName+ "\', ";
-			r_matches = r_matches + numMatches + ", ";
-			SystemVariables.getInstance().appendToExperimentNotes("\\n\\t" + pssmName + "\\t" + numMatches);
-		}
-		SystemVariables.getInstance().appendToExperimentNotes("\\n Total number of matches: " + totalNumMatches);
-		
-		System.out.println("In positive sequences: ");
-		System.out.println(r_pssmNames);
-		System.out.println(r_matches);
-		//****
 		
 		
 		ArrayList<Feature> negRegElements = regulatoryElementService.getRegulatoryElements(
@@ -122,33 +98,8 @@ public class Explorer{
 					regulatoryRegionService.getNegativeRegulatoryRegions(), null, negativeCutOffScore);
 		}
 		
+		addMotifMatchingStatisticsToNotes("negative");
 		
-		//**** Print notes
-		SystemVariables.getInstance().appendToExperimentNotes("\\n* Number of PSSM matches in negative sequences: ");
-		//System.out.println("Total number of PSSM matches in negative sequences: ");
-
-		pssmMatchStats = regulatoryElementService.getPssmMatchingStatistics();
-		pssmMatchNames = pssmMatchStats.keys();
-		numReg = regulatoryRegionService.getNegativeRegulatoryRegions().size();
-		totalNumMatches = 0;
-		r_pssmNames = "";
-		r_matches = "";
-		while(pssmMatchNames.hasMoreElements()){
-			String pssmName = pssmMatchNames.nextElement();
-			double pssmStat = pssmMatchStats.get(pssmName);
-			int numMatches = (int)(pssmStat*numReg);
-			totalNumMatches = totalNumMatches + numMatches;
-			
-			r_pssmNames = r_pssmNames + "\'" + pssmName+ "\', ";
-			r_matches = r_matches + numMatches + ", ";
-			SystemVariables.getInstance().appendToExperimentNotes("\\n\\t" + pssmName + "\\t" + numMatches);
-		}
-		SystemVariables.getInstance().appendToExperimentNotes("\\n Total number of matches: " + totalNumMatches);
-		
-		System.out.println("In negative sequences: ");
-		System.out.println(r_pssmNames);
-		System.out.println(r_matches);
-		//****
 		
 
 		/*	
@@ -169,6 +120,50 @@ public class Explorer{
 				posRegElements, negRegElements);
 		
 		return ilpService;
+	}
+
+
+	/* Note: unsound method
+	 * Based on the statistics, collected when extracting motif matches by RegElementService,
+	 * collects text note of motif matching statistics, which will be added to ILP file.
+	 * This method has to be called immediately after RegElementService.getRegulatoryElements call,
+	 * since every such call overrides the pssmMatchStatistics in RegElementService
+	 * 
+	 * @param sequenceKind - can only be "positive" or "negative", depending on the kind of sequences
+	 */
+	private void addMotifMatchingStatisticsToNotes(String sequenceKind) throws DataFormatException {
+		
+		Hashtable<String, Double> pssmMatchStats = regulatoryElementService.getPssmMatchingStatistics();
+		if (pssmMatchStats != null && !pssmMatchStats.isEmpty()){
+			
+			SystemVariables.getInstance().appendToExperimentNotes("\\n* Number of PSSM matches in " + sequenceKind + " sequences: ");
+			int numberOfRegions = 0;
+			if ("positive".equals(sequenceKind)){
+				numberOfRegions = regulatoryRegionService.getPositiveRegulatoryRegions().size();
+			} else{
+				numberOfRegions = regulatoryRegionService.getNegativeRegulatoryRegions().size();
+			}
+			
+			Enumeration<String> pssmMatchNames = pssmMatchStats.keys();
+			int totalNumMatches = 0;
+			String r_pssmNames = "";
+			String r_matches = "";
+			while(pssmMatchNames.hasMoreElements()){
+				String pssmName = pssmMatchNames.nextElement();
+				double pssmStat = pssmMatchStats.get(pssmName);
+				int numMatches = (int)(pssmStat*numberOfRegions);
+				totalNumMatches = totalNumMatches + numMatches;
+				
+				r_pssmNames = r_pssmNames + "\'" + pssmName+ "\', ";
+				r_matches = r_matches + numMatches + ", ";
+				SystemVariables.getInstance().appendToExperimentNotes("\\n\\t" + pssmName + "\\t" + numMatches);
+			}
+			SystemVariables.getInstance().appendToExperimentNotes("\\n Total number of matches: " + totalNumMatches);
+			
+//			System.out.println("In positive sequences: ");
+//			System.out.println(r_pssmNames);
+//			System.out.println(r_matches);
+		}
 	}
 	
 	

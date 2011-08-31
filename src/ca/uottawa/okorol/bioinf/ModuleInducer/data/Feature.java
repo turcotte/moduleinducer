@@ -150,6 +150,13 @@ public class Feature implements Comparable<Feature>{
 		this.sequence = upstreamSequence;
 	}
 	
+	private boolean areEqual(String val1, String val2){
+		if (val1 == null && val2 == null) return true;
+		
+		if (val1 == null || val2 == null) return false;
+		
+		return val1.equals(val2);
+	}
 	
 	
 public int compareTo(Feature otherHit){
@@ -196,6 +203,31 @@ public int compareTo(Feature otherHit){
 	    
 
 	}
+
+@Override 
+public boolean equals(Object aThat) {
+	
+	if (this == null && aThat == null) return true;
+	if ( !(aThat instanceof Feature) ) return false;
+	
+	Feature that = (Feature) aThat;
+	
+	if (!areEqual(this.type, that.type)) return false;
+	if (!areEqual(this.id, that.id)) return false;
+	if (!areEqual(this.name, that.name)) return false;
+	if (!areEqual(this.parent, that.parent)) return false;
+	if (!areEqual(this.note, that.note)) return false;
+	if (!areEqual(this.strand, that.strand)) return false;
+    if (this.startPosition != that.startPosition) return false;
+    if (this.endPosition != that.endPosition) return false;
+	if (Double.compare(this.score, that.score) != 0) return false;
+	
+	if (!areEqual(this.source, that.source)) return false;
+	if (!areEqual(this.sequence, that.sequence)) return false;
+	
+	return true;
+}
+
 	
 
 }

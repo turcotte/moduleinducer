@@ -3,22 +3,19 @@ package ca.uottawa.okorol.bioinf.ModuleInducer.services;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.Iterator;
-import java.util.StringTokenizer;
 
 import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
 import ca.uottawa.okorol.bioinf.ModuleInducer.data.RegulatoryElementPWM;
 import ca.uottawa.okorol.bioinf.ModuleInducer.exceptions.DataFormatException;
 import ca.uottawa.okorol.bioinf.ModuleInducer.interfaces.RegulatoryElementService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.properties.SystemVariables;
+import ca.uottawa.okorol.bioinf.ModuleInducer.tools.DataFormatter;
 import ca.uottawa.okorol.bioinf.ModuleInducer.tools.FileHandling;
 
 /* This regulatory service employs two MEME suite tools: DREME and MAST.
@@ -29,11 +26,9 @@ import ca.uottawa.okorol.bioinf.ModuleInducer.tools.FileHandling;
 public class MemeSuiteRegElementService implements RegulatoryElementService {
 	
 
-	private String dremeOutputFileName = SystemVariables.getInstance().getString("dreme.output.file.name");
 	private String memeInstallDirName = SystemVariables.getInstance().getString("meme.install.dir"); 
 	private String tempMemeOutputDir;
 	private Hashtable<String, Double> pssmMatchingStats; //keeps track of number of PSSM matches in all sequences / by # of sequences
-	private Hashtable<String, int[][]> pssms; // hashed by name
 	
 	
 	
@@ -46,7 +41,7 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 	
 	private String createSequencesFile(ArrayList<Feature> regRegions, String fileName) throws DataFormatException{
 		
-		if (!new File(fileName).exists() && regRegions != null){
+		if (regRegions != null){
 		
 			BufferedWriter writer = null;
 	
@@ -79,18 +74,15 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 	 */
 	public ArrayList<Feature> getRegulatoryElements(ArrayList<Feature> regRegions, ArrayList<Feature> backgroundRegRegions, double cutOffScore) throws DataFormatException {
 		
-		
-		ArrayList<Feature> tfbsHits = new ArrayList<Feature>();
-		
-		final String seqFileName = tempMemeOutputDir + SystemVariables.getInstance().getString("meme.tmp.seq.output.file.name.prefix") + "Pos.fa";
-		final String bkgrSeqFileName = tempMemeOutputDir + SystemVariables.getInstance().getString("meme.tmp.seq.output.file.name.prefix") + "Neg.fa";
+		final String seqFileName = tempMemeOutputDir + SystemVariables.getInstance().getString("meme.tmp.seq.output.file.name.prefix") + "Pos" + System.currentTimeMillis();
+		final String bkgrSeqFileName = tempMemeOutputDir + SystemVariables.getInstance().getString("meme.tmp.seq.output.file.name.prefix") + "Neg" + System.currentTimeMillis();
+		final String dremeOutputFileName = tempMemeOutputDir + SystemVariables.getInstance().getString("dreme.output.file.name");
+		final String mastOutputDir = tempMemeOutputDir + "mastTestDir" + System.currentTimeMillis() + "/";
 		
 		// *** Write sequences into a fasta file
 		createSequencesFile(regRegions, seqFileName);
 		createSequencesFile(backgroundRegRegions, bkgrSeqFileName);
 		
-		
-		pssmMatchingStats = new Hashtable<String, Double>();
 
 		try {
 			Runtime rt = Runtime.getRuntime();
@@ -104,25 +96,34 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 				
 				// *** Discover motifs using DREME 
 				if (backgroundRegRegions != null) { //i.e. if we already have the results of a DREME run in a temp dir
-					final String dremeCmd = "./dreme -p " + seqFileName + " -n " + bkgrSeqFileName + " > " + tempMemeOutputDir + dremeOutputFileName; 
+					final String dremeCmd = "./dreme -p " + seqFileName + " > " + dremeOutputFileName; 
+//					final String dremeCmd = "./dreme -p " + seqFileName + " -n " + bkgrSeqFileName + " > " + dremeOutputFileName; 
 	//				final String dremeCmd = "./dreme -p " + seqFileName + " -n " + bkgrSeqFileName; 
 					
-					System.out.println(dremeCmd + "\n");
-					System.out.println("tempDir:" + tempMemeOutputDir);
+					//System.out.println(dremeCmd + "\n");
 					
 					pr = rt.exec(new String[] { "/bin/sh", "-c", dremeCmd }, null, new File(memeInstallDirName)); 
 	
+
 					// 0 -success
 					// 1-127 - job itself called exit()
 					// 129-255 - job terminated by Unix
 					exitVal = pr.waitFor();
 					System.out.println("DREME exit code: " + exitVal);
+					
+					if (FileHandling.fileContains(dremeOutputFileName, "0 motifs with E-value < ")){
+						throw new DataFormatException("No motifs were found.");
+					}
+					
+					
 				}
 				
 				
 				// *** Locate motifs (discovered by DREME) using MAST
-				final String mastCmd = "./mast  " + tempMemeOutputDir + dremeOutputFileName + " " + seqFileName + 
-							" -o "+ tempMemeOutputDir + "mastTestDir" + System.currentTimeMillis(); 
+				final String mastCmd = "./mast  " + dremeOutputFileName + " " + seqFileName + 
+							" -o "+ mastOutputDir; 
+				
+				System.out.println(mastCmd + "\n");
 				
 				pr = rt.exec(new String[] { "/bin/sh", "-c", mastCmd }, null, new File(memeInstallDirName)); 
 
@@ -143,25 +144,17 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 //			}
 			
 			
-
-			
-			// *** Parse MAST output
-			
-			// pssmMatchingStats.put(pssmName, (double)hits / regRegions.size());
-			
 	
 		} catch (Exception e) {
 			System.out.println(e.toString());
 			e.printStackTrace();
 		}
-
 		
-		//File seqFile = new File(seqFileName);
-		//seqFile.delete(); 
-		
-
-		return tfbsHits;
+		//return parsed MAST output
+		return DataFormatter.extractRegElementsFromXml(mastOutputDir + "mast.xml");
 	}
+	
+	
 	
 	/* Statistics for the last Patser run. With every getRegulatoryElements() run it gets overwritten.
 	 * 

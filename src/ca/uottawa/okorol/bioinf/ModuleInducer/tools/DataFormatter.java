@@ -40,10 +40,10 @@ public class DataFormatter {
 			//get the root element
 			Element docEle = dom.getDocumentElement();
 
-			System.out.println ("Root element of the doc is " + docEle.getNodeName());
+			//System.out.println ("Root element of the doc is " + docEle.getNodeName());
 
 			NodeList sequenceElList = docEle.getElementsByTagName("sequence");
-			System.out.println("Number of sequences in the document: " + sequenceElList.getLength());
+			//System.out.println("Number of sequences in the document: " + sequenceElList.getLength());
 			
 			if(sequenceElList != null && sequenceElList.getLength() > 0) {
 				for (int i = 0 ; i < sequenceElList.getLength();i++) {
@@ -53,22 +53,24 @@ public class DataFormatter {
 					
 					NodeList hitElList = seqEl.getElementsByTagName("hit");
 					
-					System.out.println("Number of hits for sequence " + i +" : " + hitElList.getLength());
+					//System.out.println("Number of hits for sequence " + i +" : " + hitElList.getLength());
 					
 					for (int j = 0; j < hitElList.getLength(); j++){
-						Element hitEl = (Element)hitElList.item(i);
+						Element hitEl = (Element)hitElList.item(j);
+						
+						//System.out.println("Tag name: "+ hitEl.getTagName()+ "   Node name: " +hitEl.getNodeName());
 						
 						Feature hit = new Feature("TF_binding_site");
-						hit.setName(getTextValue(hitEl, "motif")); //TODO: perhaps print the actual motif sequence
-						hit.setParent(getTextValue(seqEl,"name"));
-						if ("reverse".equals(getTextValue(hitEl, "strand"))){
+						hit.setName(hitEl.getAttribute("motif")); //TODO: perhaps print the actual motif sequence
+						hit.setParent(seqEl.getAttribute("name"));
+						if ("reverse".equals(hitEl.getAttribute("strand"))){
 							hit.setStrand("R");
 						} else {
 							hit.setStrand("D");
 						}
-//						hit.setStartPosition(Integer.parseInt(getTextValue(hitEl, "pos")));
-//						hit.setEndPosition(0); //TODO: fix
-//						hit.setScore(Double.parseDouble(getTextValue(hitEl, "pvalue")));
+						hit.setStartPosition(Integer.parseInt(hitEl.getAttribute("pos")));
+						hit.setEndPosition(hit.getStartPosition() + 7); //TODO: fix
+						hit.setScore(Double.parseDouble(hitEl.getAttribute("pvalue")));
 						
 						motifHits.add(hit);
 					}
@@ -89,21 +91,7 @@ public class DataFormatter {
 		return motifHits;
 	}
 	
-	/* Helper method for the xml parser above
-	 * Given an xml element, returns a String value of the supplied tag
-	 */
-	private static String getTextValue(Element ele, String tagName) {
-		String textVal = null;
-		NodeList nl = ele.getElementsByTagName(tagName);
-		if(nl != null && nl.getLength() > 0) {
-			Element el = (Element)nl.item(0);
-			textVal = el.getFirstChild().getNodeValue();
-		}
-
-		return textVal;
-	}
-
-
+	
 	
 	/* Extracts the rules of resulting theory from the full Aleph output.
 	 * Each rule is placed separately into the ArrayList.

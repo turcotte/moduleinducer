@@ -83,7 +83,6 @@ public class MainEngine {
 			Explorer explorer = new Explorer(regRegionService, regElService, tempOutputDir);
 			//Experimenter experimenter = new Experimenter(explorer);
 
-			System.out.println("\n\n************************ Single run of all data ***************************\n");
 			String theory = explorer.induceRules();
 			System.out.println(theory);
 		
@@ -93,7 +92,8 @@ public class MainEngine {
 			//System.out.println(SystemVariables.getInstance().getExperimentNotes());
 			
 			
-			
+			timeAfter = System.currentTimeMillis();
+			System.out.println("== Execution time (sec): " + (timeAfter - timeBefore) / 1000);
 			
 			
 
