@@ -1,5 +1,8 @@
 package ca.uottawa.okorol.bioinf.ModuleInducer.tools;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -15,12 +18,62 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
+import ca.uottawa.okorol.bioinf.ModuleInducer.exceptions.DataFormatException;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.Experimenter;
 
 /* Collection of static methods that deal with formatting of the project's specific data,
  * which has a generic format. Ex. massaging Aleph's output, saved as a String, etc.
  */
 public class DataFormatter {
+	
+	/* Extract motif hits from FIMO output (as gff)  
+	 * @param gffFileName - full path to a gff file
+	 */
+	public static ArrayList<Feature> extractRegElementFromGff(String gffFileName){
+		ArrayList<Feature> motifHits = new ArrayList<Feature>();
+		
+		File file = new File(gffFileName);
+
+		try {
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			String line = br.readLine(); // read the first line - it's a gff-version line; no data
+			
+			while ((line = br.readLine()) != null){
+				motifHits.add(extractFeatureFromGff(line));
+			}
+		
+			br.close();
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return motifHits;
+	}
+	
+	/*
+	 * Given one line from a gff file, creates and populates a Feature object with the gff data
+	 */
+	public static Feature extractFeatureFromGff(String gffLine){
+		Feature feature = new Feature();
+		
+		String[] gffParams = gffLine.split("[\\s;]+");
+
+		feature.setType(gffParams[2]);
+		feature.setParent(gffParams[0]);
+		feature.setStartPosition(Integer.parseInt(gffParams[3]));
+		feature.setEndPosition(Integer.parseInt(gffParams[4]));
+		if ("-".equals(gffParams[6])){
+			feature.setStrand("R");
+		} else {
+			feature.setStrand("D");
+		}
+		feature.setName(gffParams[8].substring(11));
+		// score is a p-value
+		feature.setScore(Double.parseDouble(gffParams[9].substring(7)));
+		
+		
+		return feature;
+	}
 
 	/* Extract motif hits from MAST output (as xml)  
 	 * @param xmlFileName - full path to an xml file

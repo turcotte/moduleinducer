@@ -93,15 +93,17 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 			
 			if (System.getProperty("os.name").startsWith("Mac")){ 
 				int exitVal;
+
 				
 				// *** Discover motifs using DREME 
 				if (backgroundRegRegions != null) { //i.e. if we already have the results of a DREME run in a temp dir
-					final String dremeCmd = "./dreme -p " + seqFileName + " > " + dremeOutputFileName; 
+					final String dremeCmd = "./dreme -p " + seqFileName + " > " + dremeOutputFileName + " 2>/dev/null"; 
+//					final String dremeCmd = "./dreme -p " + seqFileName + " > " + dremeOutputFileName; 
 //					final String dremeCmd = "./dreme -p " + seqFileName + " -n " + bkgrSeqFileName + " > " + dremeOutputFileName; 
-	//				final String dremeCmd = "./dreme -p " + seqFileName + " -n " + bkgrSeqFileName; 
+//					final String dremeCmd = "./dreme -p " + seqFileName + " -n " + bkgrSeqFileName; 
 					
 					//System.out.println(dremeCmd + "\n");
-					
+					System.out.println("Starting DREME execution.");
 					pr = rt.exec(new String[] { "/bin/sh", "-c", dremeCmd }, null, new File(memeInstallDirName)); 
 	
 
@@ -121,10 +123,20 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 				
 				// *** Locate motifs (discovered by DREME) using MAST
 				final String mastCmd = "./mast  " + dremeOutputFileName + " " + seqFileName + 
-							" -o "+ mastOutputDir; 
+							" -o "+ mastOutputDir + " -mt 0.001" + " 2>/dev/null"; 
 				
-				System.out.println(mastCmd + "\n");
+//				String mastFile = "";
+//				if (backgroundRegRegions == null){
+//					mastFile = "/Users/okoro103/workspace/ModuleInducer/tmp/mi_meme_ery_jur/mi_MemeOut/memeSeqNeg.txt";
+//				} else {
+//					mastFile = "/Users/okoro103/workspace/ModuleInducer/tmp/mi_meme_ery_jur/mi_MemeOut/memeSeqPos.txt";
+//				}
+//				final String mastCmd = "./mast  " + "/Users/okoro103/workspace/ModuleInducer/tmp/mi_meme_ery_jur/mi_MemeOut/dreme_manual.out " + mastFile + 
+//				" -o "+ mastOutputDir; 
+	
 				
+				//System.out.println(mastCmd + "\n");
+				System.out.println("Starting MAST execution.");
 				pr = rt.exec(new String[] { "/bin/sh", "-c", mastCmd }, null, new File(memeInstallDirName)); 
 
 				exitVal = pr.waitFor();

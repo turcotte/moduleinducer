@@ -812,10 +812,9 @@ public class IlpService {
 			File ilpDir = new File(ilpDirName);
 			
 			if (System.getProperty("os.name").startsWith("Mac")){
-				final String cmd = "./runILP.sh";	
+				final String cmd = "./runILP.sh 2>/dev/null";	
 				
-				// pr = rt.exec(new String[] { "/bin/sh", "-c", cmd }, null, ilpDir);
-				pr = rt.exec(new String[] { "/bin/sh", cmd }, null, ilpDir);
+				 pr = rt.exec(new String[] { "/bin/sh", "-c", cmd }, null, ilpDir);
 				
 			} else { // i.e. Windows
 								
@@ -832,7 +831,7 @@ public class IlpService {
 				ilpTheory = ilpTheory + line + "\n";
 			}
 	
-			/*
+/*			
 			//Error stream
 			System.out.println("\n ***** Error stream ******");
 			BufferedReader inputErr = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
@@ -840,9 +839,8 @@ public class IlpService {
 			while ((line = inputErr.readLine()) != null) {
 				System.out.println(line);
 			}
-			System.out.println("***** End error stram *****");
-			*/
-			
+			System.out.println("***** End error stram *****");		
+*/			
 			
 
 			
