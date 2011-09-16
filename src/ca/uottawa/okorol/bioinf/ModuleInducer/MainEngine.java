@@ -57,30 +57,30 @@ public class MainEngine {
 			MemeSuiteRegElementService regElService = new MemeSuiteRegElementService(tempOutputDir);
 			
 			
-//			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: Erythroid vs Jurkat" ); 
-//			HomoSapiensRegRegionService regRegionService = new HomoSapiensRegRegionService(HomoSapiensRegRegionService.JURKAT,
-//					HomoSapiensRegRegionService.ERYTHROID); 
-			
 			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: Erythroid vs Jurkat" ); 
-			HomoSapiensRegRegionService regRegionService = new HomoSapiensRegRegionService(HomoSapiensRegRegionService.ERYTHROID,
-					HomoSapiensRegRegionService.JURKAT); 
+			HomoSapiensRegRegionService regRegionService = new HomoSapiensRegRegionService(HomoSapiensRegRegionService.JURKAT,
+					HomoSapiensRegRegionService.ERYTHROID); 
+			
+//			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: Erythroid vs Jurkat" ); 
+//			HomoSapiensRegRegionService regRegionService = new HomoSapiensRegRegionService(HomoSapiensRegRegionService.ERYTHROID,
+//					HomoSapiensRegRegionService.JURKAT); 
 			
 			//----- Shrink the size of data
-/*	
+	
 			ArrayList<Feature> newPos = new ArrayList<Feature>();
 			ArrayList<Feature> newNeg = new ArrayList<Feature>();
 			
 			//Works: 1000 (14 motifs, 446 sec), 500 (8 motifs, 147 sec), 200 (6 motifs, 53 sec), 60 (3 motifs, 9 sec)
 			//Doesn't: 20
-			for (int i=0; i < 100; i++){
-				newPos.add(regRegionService.getPositiveRegulatoryRegions().get(i));
+			for (int i=0; i < regRegionService.getPositiveRegulatoryRegions().size(); i++){
+				//newPos.add(regRegionService.getPositiveRegulatoryRegions().get(i));
 				newNeg.add(regRegionService.getNegativeRegulatoryRegions().get(i));
 				
 			}
 			
-			regRegionService.setPositiveRegulatoryRegions(newPos);
+			//regRegionService.setPositiveRegulatoryRegions(newPos);
 			regRegionService.setNegativeRegulatoryRegions(newNeg);
-*/		
+
 			//-----
 			
 			

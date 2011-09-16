@@ -51,7 +51,7 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 				for (Iterator<Feature> iterator = regRegions.iterator(); iterator.hasNext();) {
 					Feature gene = (Feature) iterator.next();
 					
-					writer.write("> "+ gene.getId() + "\n" + gene.getSequence() + "\n\n"); 
+					writer.write(">"+ gene.getId() + "\n" + gene.getSequence() + "\n\n"); 
 					
 				}
 				
@@ -77,7 +77,7 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 		final String seqFileName = tempMemeOutputDir + SystemVariables.getInstance().getString("meme.tmp.seq.output.file.name.prefix") + "Pos" + System.currentTimeMillis();
 		final String bkgrSeqFileName = tempMemeOutputDir + SystemVariables.getInstance().getString("meme.tmp.seq.output.file.name.prefix") + "Neg" + System.currentTimeMillis();
 		final String dremeOutputFileName = tempMemeOutputDir + SystemVariables.getInstance().getString("dreme.output.file.name");
-		final String mastOutputDir = tempMemeOutputDir + "mastTestDir" + System.currentTimeMillis() + "/";
+		final String fimoOutputDir = tempMemeOutputDir + "fimo_out" + System.currentTimeMillis() + "/";
 		
 		// *** Write sequences into a fasta file
 		createSequencesFile(regRegions, seqFileName);
@@ -97,10 +97,11 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 				
 				// *** Discover motifs using DREME 
 				if (backgroundRegRegions != null) { //i.e. if we already have the results of a DREME run in a temp dir
+					
+					// " 2>/dev/null" is to scrap the error stream, which gets flooded otherwise and causes the process to run away,
+					//	i.e. wait for the response from the caller (java), which never comes
 					final String dremeCmd = "./dreme -p " + seqFileName + " > " + dremeOutputFileName + " 2>/dev/null"; 
-//					final String dremeCmd = "./dreme -p " + seqFileName + " > " + dremeOutputFileName; 
-//					final String dremeCmd = "./dreme -p " + seqFileName + " -n " + bkgrSeqFileName + " > " + dremeOutputFileName; 
-//					final String dremeCmd = "./dreme -p " + seqFileName + " -n " + bkgrSeqFileName; 
+//					final String dremeCmd = "./dreme -p " + seqFileName + " -n " + bkgrSeqFileName + " > " + dremeOutputFileName + " 2>/dev/null"; 
 					
 					//System.out.println(dremeCmd + "\n");
 					System.out.println("Starting DREME execution.");
@@ -121,26 +122,18 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 				}
 				
 				
-				// *** Locate motifs (discovered by DREME) using MAST
-				final String mastCmd = "./mast  " + dremeOutputFileName + " " + seqFileName + 
-							" -o "+ mastOutputDir + " -mt 0.001" + " 2>/dev/null"; 
+				// *** Locate motifs, discovered by Dreme, using FIMO
+				// " 2>/dev/null" is to scrap the error stream, which gets flooded otherwise and causes the process to run away,
+				//	i.e. wait for the response from the caller (java), which never comes
+				final String fimoCmd = "./fimo  " + " -o "+ fimoOutputDir + " " + dremeOutputFileName + " " + seqFileName + " 2>/dev/null"; 
 				
-//				String mastFile = "";
-//				if (backgroundRegRegions == null){
-//					mastFile = "/Users/okoro103/workspace/ModuleInducer/tmp/mi_meme_ery_jur/mi_MemeOut/memeSeqNeg.txt";
-//				} else {
-//					mastFile = "/Users/okoro103/workspace/ModuleInducer/tmp/mi_meme_ery_jur/mi_MemeOut/memeSeqPos.txt";
-//				}
-//				final String mastCmd = "./mast  " + "/Users/okoro103/workspace/ModuleInducer/tmp/mi_meme_ery_jur/mi_MemeOut/dreme_manual.out " + mastFile + 
-//				" -o "+ mastOutputDir; 
-	
 				
 				//System.out.println(mastCmd + "\n");
-				System.out.println("Starting MAST execution.");
-				pr = rt.exec(new String[] { "/bin/sh", "-c", mastCmd }, null, new File(memeInstallDirName)); 
+				System.out.println("Starting FIMO execution.");
+				pr = rt.exec(new String[] { "/bin/sh", "-c", fimoCmd }, null, new File(memeInstallDirName)); 
 
 				exitVal = pr.waitFor();
-				System.out.println("MAST exit code: " + exitVal);
+				System.out.println("FIMO exit code: " + exitVal);
 
 				
 			} else { // i.e. Windows
@@ -163,7 +156,7 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 		}
 		
 		//return parsed MAST output
-		return DataFormatter.extractRegElementsFromXml(mastOutputDir + "mast.xml");
+		return DataFormatter.extractRegElementFromGff(fimoOutputDir + "fimo.gff");
 	}
 	
 	

@@ -23,6 +23,7 @@ public class DataFormatterTest extends TestCase {
 		
 		ArrayList<Feature> actual = DataFormatter.extractRegElementFromGff("./data/testData/fimo_short.gff");
 		//FeaturesTools.printFeatures(actual);
+		//FeaturesTools.printFeatures(expected);
 		
 		assertTrue(expected.containsAll(actual));
 		assertTrue(actual.containsAll(expected));
@@ -41,7 +42,7 @@ public class DataFormatterTest extends TestCase {
 		
 		
 		ArrayList<Feature> actual = DataFormatter.extractRegElementsFromXml("./data/testData/mast_short.xml");
-		System.out.println("Number of features : " + actual.size());
+		//System.out.println("Number of features : " + actual.size());
 		//FeaturesTools.printFeatures(actual);
 		//FeaturesTools.printFeatures(expected);
 		
