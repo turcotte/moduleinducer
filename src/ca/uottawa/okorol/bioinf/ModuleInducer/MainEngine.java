@@ -7,11 +7,9 @@ import java.util.Iterator;
 import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
 import ca.uottawa.okorol.bioinf.ModuleInducer.exceptions.DataFormatException;
 import ca.uottawa.okorol.bioinf.ModuleInducer.properties.SystemVariables;
-import ca.uottawa.okorol.bioinf.ModuleInducer.services.CElegansRegRegionService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.Explorer;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.HomoSapiensRegRegionService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.MemeSuiteRegElementService;
-import ca.uottawa.okorol.bioinf.ModuleInducer.services.SyntheticRegRegionService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.tools.FileHandling;
 
 public class MainEngine {
@@ -41,6 +39,7 @@ public class MainEngine {
 			
 			long timeBefore, timeAfter;
 			String tempOutputDir;
+			File pwmDir;
 			
 
 			
@@ -72,13 +71,13 @@ public class MainEngine {
 			
 			//Works: 1000 (14 motifs, 446 sec), 500 (8 motifs, 147 sec), 200 (6 motifs, 53 sec), 60 (3 motifs, 9 sec)
 			//Doesn't: 20
-			for (int i=0; i < regRegionService.getPositiveRegulatoryRegions().size(); i++){
-				//newPos.add(regRegionService.getPositiveRegulatoryRegions().get(i));
+			for (int i=0; i < 100; i++){
+				newPos.add(regRegionService.getPositiveRegulatoryRegions().get(i));
 				newNeg.add(regRegionService.getNegativeRegulatoryRegions().get(i));
 				
 			}
 			
-			//regRegionService.setPositiveRegulatoryRegions(newPos);
+			regRegionService.setPositiveRegulatoryRegions(newPos);
 			regRegionService.setNegativeRegulatoryRegions(newNeg);
 
 			//-----
@@ -98,7 +97,7 @@ public class MainEngine {
 			
 			timeAfter = System.currentTimeMillis();
 			System.out.println("== Execution time (sec): " + (timeAfter - timeBefore) / 1000);
-			
+		
 			
 
 			/*		
@@ -107,7 +106,7 @@ public class MainEngine {
 
 	
 			//Params of the run
-			File pwmDir = new File(SystemVariables.getInstance().getString("homo.sapiens.PWMs.dir"));
+			pwmDir = new File(SystemVariables.getInstance().getString("homo.sapiens.PWMs.dir"));
 			int negExMultFactor = 1; 
 			
 			
@@ -273,8 +272,8 @@ public class MainEngine {
 		*/	
 			
 			
-		/*	
-
+		
+/*
 			// *** C. elegans data
 			timeBefore = System.currentTimeMillis();
 			
@@ -308,7 +307,7 @@ public class MainEngine {
 			//FileHandling.deleteDirectory(tempOutputDir);	
 			//System.out.println(SystemVariables.getInstance().getExperimentNotes());
 			
-			*/ 
+*/			 
 			
 			/*
 			

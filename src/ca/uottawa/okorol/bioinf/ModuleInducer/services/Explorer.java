@@ -55,7 +55,7 @@ public class Explorer{
 		
 		SystemVariables.getInstance().appendToExperimentNotes("\\n* Number of positive sequences: " + regulatoryRegionService.getPositiveRegulatoryRegions().size()); 
 		SystemVariables.getInstance().appendToExperimentNotes("\\n* Number of negative sequences: "+ regulatoryRegionService.getNegativeRegulatoryRegions().size());
-/*
+
 		SystemVariables.getInstance().appendToExperimentNotes("\\n* Patser cut-off score for positive sequences: " +
 				positiveCutOffScore);
 		SystemVariables.getInstance().appendToExperimentNotes("\\n* Patser cut-off score for negative sequences: " +
@@ -70,7 +70,7 @@ public class Explorer{
 		negATcomposition = negNtComposition[0] + negNtComposition[3];
 		negCGcomposition = negNtComposition[1] + negNtComposition[2];
 		SystemVariables.getInstance().appendToExperimentNotes("\\n* A:T and C:G composition of negative sequences: " + negATcomposition + " " + negCGcomposition);
-*/		
+		
 	}
 	
 	
