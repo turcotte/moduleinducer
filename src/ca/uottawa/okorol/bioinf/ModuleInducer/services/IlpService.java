@@ -495,11 +495,12 @@ public class IlpService {
 					"	D1 < D+Offset.\n\n" +
 					
 					//"range(0).\n" +
+					"range(0).\n" +
+					"range(1).\n" +
+					"range(2).\n" +
+					"range(3).\n" +
 					"range(5).\n" +
-					"range(10).\n" +
-					"range(15).\n" +
-					"range(30).\n" +
-					"range(100).\n\n");
+					"range(10).\n\n");
 
 			
 			bw.write("% Position specific \n\n");
@@ -517,7 +518,8 @@ public class IlpService {
 			
 			bw.write("pos_lteq(Seq, Feature, Pos) :-\n" +
 					"	var(Pos), !,\n" +
-					"	has_feature(Seq, Feature, Pos, _, _, _).\n\n" +
+					"	has_feature(Seq, Feature, Pos, _, _, _),\n" +
+					"	Pos =< 0. \n\n" +
 					
 					"pos_lteq(Seq, Feature, Value) :-\n" +
 					"	has_feature(Seq, Feature, Pos, _, _, _),\n" +
@@ -526,11 +528,12 @@ public class IlpService {
 			
 			bw.write("pos_gteq(Seq, Feature, Pos) :-\n" +
 					"	var(Pos), !,\n" +
-					"	has_feature(Seq, Feature, Pos, _, _, _).\n\n" +
+					"	has_feature(Seq, Feature, Pos, _, _, _),\n" +
+					"	Pos >= 0. \n\n" +
 					
 					"pos_gteq(Seq, Feature, Value) :-\n" +
 					"	has_feature(Seq, Feature, Pos, _, _, _),\n" +
-					"	Pos =< Value.\n\n");
+					"	Pos >= Value.\n\n");
 
 			bw.write("% Types\n\n");
 

@@ -56,16 +56,16 @@ public class MainEngine {
 			MemeSuiteRegElementService regElService = new MemeSuiteRegElementService(tempOutputDir);
 			
 			
-			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: Erythroid vs Jurkat" ); 
-			HomoSapiensRegRegionService regRegionService = new HomoSapiensRegRegionService(HomoSapiensRegRegionService.JURKAT,
-					HomoSapiensRegRegionService.ERYTHROID); 
-			
 //			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: Erythroid vs Jurkat" ); 
-//			HomoSapiensRegRegionService regRegionService = new HomoSapiensRegRegionService(HomoSapiensRegRegionService.ERYTHROID,
-//					HomoSapiensRegRegionService.JURKAT); 
+//			HomoSapiensRegRegionService regRegionService = new HomoSapiensRegRegionService(HomoSapiensRegRegionService.JURKAT,
+//					HomoSapiensRegRegionService.ERYTHROID); 
+			
+			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: Erythroid vs Jurkat" ); 
+			HomoSapiensRegRegionService regRegionService = new HomoSapiensRegRegionService(HomoSapiensRegRegionService.ERYTHROID,
+					HomoSapiensRegRegionService.JURKAT); 
 			
 			//----- Shrink the size of data
-	
+/*	
 			ArrayList<Feature> newPos = new ArrayList<Feature>();
 			ArrayList<Feature> newNeg = new ArrayList<Feature>();
 			
@@ -79,7 +79,7 @@ public class MainEngine {
 			
 			regRegionService.setPositiveRegulatoryRegions(newPos);
 			regRegionService.setNegativeRegulatoryRegions(newNeg);
-
+*/
 			//-----
 			
 			
