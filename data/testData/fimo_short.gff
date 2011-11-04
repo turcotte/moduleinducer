@@ -1,0 +1,7 @@
+##gff-version 3
+jur_1	fimo	polypeptide_motif	413	420	15.2864	-	.	motif_name=ASAGGAAG;pvalue=1.47e-05;qvalue=0.0973;sequence=AGAGGAAG
+jur_1	fimo	polypeptide_motif	351	357	12.2452	-	.	motif_name=GTGGBTW;pvalue=5.35e-05;qvalue=0.232;sequence=GTGGCTT
+jur_10	fimo	polypeptide_motif	85	92	3.50365	+	.	motif_name=ASAGGAAG;pvalue=6.51e-05;qvalue=0.154;sequence=ATAGGAAG
+jur_10	fimo	polypeptide_motif	267	273	12.8647	-	.	motif_name=CAGGTGB;pvalue=8.78e-05;qvalue=0.167;sequence=CAGGTGC
+jur_100	fimo	polypeptide_motif	69	75	12.5974	-	.	motif_name=ACCRCAD;pvalue=5.35e-05;qvalue=0.133;sequence=ACCACAG
+jur_100	fimo	polypeptide_motif	143	149	12.5974	+	.	motif_name=ACCRCAD;pvalue=5.35e-05;qvalue=0.133;sequence=ACCACAG
