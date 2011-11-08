@@ -1,3 +1,4 @@
+/*
 package ca.uottawa.okorol.bioinf.ModuleInducer.tools;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -72,3 +73,4 @@ public class BioJavaFastaExtractor {
 
 
 }
+*/
