@@ -7,6 +7,7 @@ import java.util.Iterator;
 import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
 import ca.uottawa.okorol.bioinf.ModuleInducer.exceptions.DataFormatException;
 import ca.uottawa.okorol.bioinf.ModuleInducer.properties.SystemVariables;
+import ca.uottawa.okorol.bioinf.ModuleInducer.services.CElegansRegRegionService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.Explorer;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.HomoSapiensRegRegionService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.services.MemeSuiteRegElementService;
@@ -56,16 +57,19 @@ public class MainEngine {
 			MemeSuiteRegElementService regElService = new MemeSuiteRegElementService(tempOutputDir);
 			
 			
-			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: Erythroid vs Jurkat" ); 
-			HomoSapiensRegRegionService regRegionService = new HomoSapiensRegRegionService(HomoSapiensRegRegionService.JURKAT,
-					HomoSapiensRegRegionService.ERYTHROID); 
+//			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: Erythroid vs Jurkat" ); 
+//			HomoSapiensRegRegionService regRegionService = new HomoSapiensRegRegionService(HomoSapiensRegRegionService.JURKAT,
+//					HomoSapiensRegRegionService.ERYTHROID); 
 			
 //			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: Erythroid vs Jurkat" ); 
 //			HomoSapiensRegRegionService regRegionService = new HomoSapiensRegRegionService(HomoSapiensRegRegionService.ERYTHROID,
 //					HomoSapiensRegRegionService.JURKAT); 
 			
+			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: Celegans" );
+			CElegansRegRegionService regRegionService = new CElegansRegRegionService(1);
+			
 			//----- Shrink the size of data
-
+/*
 			ArrayList<Feature> newPos = new ArrayList<Feature>();
 			ArrayList<Feature> newNeg = new ArrayList<Feature>();
 			
@@ -84,7 +88,7 @@ public class MainEngine {
 			
 			regRegionService.setPositiveRegulatoryRegions(newPos);
 			regRegionService.setNegativeRegulatoryRegions(newNeg);
-
+*/
 			//-----
 			
 			

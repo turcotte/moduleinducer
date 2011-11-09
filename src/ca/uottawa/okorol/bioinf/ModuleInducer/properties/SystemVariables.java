@@ -48,6 +48,8 @@ public class SystemVariables {
 			currentLocale = new Locale("Mac", "OK");
 		} else if ("/Users/induce".equals(System.getProperty("user.home"))){ // Marcel's Mac //$NON-NLS-1$ //$NON-NLS-2$
 			currentLocale = new Locale("Mac", "induce");			
+		} else if ("/Users/oxy".equals(System.getProperty("user.home"))){ // Mac Mini //$NON-NLS-1$ //$NON-NLS-2$
+			currentLocale = new Locale("Mac", "mini");			
 		} else if ("/Users/turcotte".equals(System.getProperty("user.home"))){ // Marcel's Mac //$NON-NLS-1$ //$NON-NLS-2$
 			currentLocale = new Locale("Mac", "MT");			
 		} else if ("C:\\Users\\Oxy".equals(System.getProperty("user.home"))){   //Oksana's Windows //$NON-NLS-1$ //$NON-NLS-2$
