@@ -1,9 +1,8 @@
 package ca.uottawa.okorol.bioinf.ModuleInducer.tools;
 import java.util.ArrayList;
-import java.util.Collections;
 
-import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
 import junit.framework.TestCase;
+import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
 
 
 public class FastaExtractorTest extends TestCase {

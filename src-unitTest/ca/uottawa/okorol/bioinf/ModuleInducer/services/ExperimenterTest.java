@@ -3,11 +3,10 @@ package ca.uottawa.okorol.bioinf.ModuleInducer.services;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import junit.framework.TestCase;
 import ca.uottawa.okorol.bioinf.ModuleInducer.exceptions.DataFormatException;
 import ca.uottawa.okorol.bioinf.ModuleInducer.tools.ArrayTools;
 import ca.uottawa.okorol.bioinf.ModuleInducer.tools.DataFormatter;
-
-import junit.framework.TestCase;
 
 
 public class ExperimenterTest extends TestCase {
