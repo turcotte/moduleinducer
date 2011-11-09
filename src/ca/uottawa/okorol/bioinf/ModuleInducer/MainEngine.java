@@ -57,16 +57,16 @@ public class MainEngine {
 			MemeSuiteRegElementService regElService = new MemeSuiteRegElementService(tempOutputDir);
 			
 			
-//			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: Erythroid vs Jurkat" ); 
-//			HomoSapiensRegRegionService regRegionService = new HomoSapiensRegRegionService(HomoSapiensRegRegionService.JURKAT,
-//					HomoSapiensRegRegionService.ERYTHROID); 
+			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: Erythroid vs Jurkat" ); 
+			HomoSapiensRegRegionService regRegionService = new HomoSapiensRegRegionService(HomoSapiensRegRegionService.JURKAT,
+					HomoSapiensRegRegionService.ERYTHROID); 
 			
 //			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: Erythroid vs Jurkat" ); 
 //			HomoSapiensRegRegionService regRegionService = new HomoSapiensRegRegionService(HomoSapiensRegRegionService.ERYTHROID,
 //					HomoSapiensRegRegionService.JURKAT); 
 			
-			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: Celegans" );
-			CElegansRegRegionService regRegionService = new CElegansRegRegionService(1);
+//			SystemVariables.getInstance().appendToExperimentNotes("\\n* Data types: Celegans" );
+//			CElegansRegRegionService regRegionService = new CElegansRegRegionService(1);
 			
 			//----- Shrink the size of data
 /*

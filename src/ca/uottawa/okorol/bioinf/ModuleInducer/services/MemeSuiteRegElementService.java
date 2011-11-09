@@ -101,6 +101,7 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 					// " 2>/dev/null" is to scrap the error stream, which gets flooded otherwise and causes the process to run away,
 					//	i.e. wait for the response from the caller (java), which never comes
 					final String dremeCmd = "./dreme -p " + seqFileName + " > " + dremeOutputFileName + " 2>/dev/null"; 
+//					final String dremeCmd = "./dreme -e 100 -p " + seqFileName + " > " + dremeOutputFileName + " 2>/dev/null"; 
 //					final String dremeCmd = "./dreme -p " + seqFileName + " -n " + bkgrSeqFileName + " > " + dremeOutputFileName + " 2>/dev/null"; 
 					
 					//System.out.println(dremeCmd + "\n");
