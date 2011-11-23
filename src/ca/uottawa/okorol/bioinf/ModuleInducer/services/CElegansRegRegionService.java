@@ -29,7 +29,7 @@ public class CElegansRegRegionService implements RegulatoryRegionService {
 	 */
 	public CElegansRegRegionService(int negExMultiplicationFactor) throws DataFormatException{
 		positiveRegRegions = this.generateRegulatoryRegions();
-		negativeRegRegions = FeaturesTools.generateSimulatedRegulatoryRegions(
+		negativeRegRegions = FeaturesTools.generateSimulatedMC1RegulatoryRegions(
 					positiveRegRegions, 
 					negExMultiplicationFactor, 
 					NEGATIVE_REGION_PREFIX);
@@ -134,7 +134,7 @@ public class CElegansRegRegionService implements RegulatoryRegionService {
 	@Override
 	public void updateNumberOfNegativeRegRegions(int multiplicationFactor) throws DataFormatException{
 		// TODO perhaps don't do it from scratch, but increase or decrease existing negativeRegRegions
-		negativeRegRegions = FeaturesTools.generateSimulatedRegulatoryRegions(
+		negativeRegRegions = FeaturesTools.generateSimulatedMC1RegulatoryRegions(
 					positiveRegRegions, multiplicationFactor, NEGATIVE_REGION_PREFIX);
 	}
 

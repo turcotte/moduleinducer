@@ -385,7 +385,41 @@ public class FeaturesTools {
 	 * @return	set of simulated regulatory regions, where each region is modelled on one of the model sequences,
 	 * 			i.e. with the same composition and length 
 	 */
-	public static ArrayList<Feature> generateSimulatedRegulatoryRegions(ArrayList<Feature> modelRegRegions, 
+	public static ArrayList<Feature> generateSimulatedMC0RegulatoryRegions(ArrayList<Feature> modelRegRegions, 
+									int multiplicationFactor, String regionNamePrefix) throws DataFormatException{
+		
+		if (multiplicationFactor <= 0) return null;
+		
+		ArrayList<Feature> simulatedRegRegions = new ArrayList<Feature>();
+		
+		for (Iterator<Feature> iterator = modelRegRegions.iterator(); iterator.hasNext();) {
+			Feature realRegRegion = (Feature) iterator.next();
+			
+			for (int i = 0; i < multiplicationFactor; i++) {
+				Feature simulRegRegion = new Feature(Feature.TYPE_REGULATORY_REGION);
+				//simulRegRegion.setId("Fake" + i + "_" + realRegRegion.getId());
+				simulRegRegion.setId(regionNamePrefix + realRegRegion.getId() + "_" + i  );
+				simulRegRegion.setNote(realRegRegion.getNote()); //same chromosome
+				simulRegRegion.setSequence(DataModeller.getRandomSequenceMC0(realRegRegion.getSequence().length(), 
+						realRegRegion.getSequence()));
+				simulatedRegRegions.add(simulRegRegion);
+			}
+		}
+		
+		return simulatedRegRegions;
+	}
+	
+	/* Generates random regulatory regions using Markov chain of order 1 (currentnt depends on the previous).
+	 * 
+	 * @param modelRegRegions	set of regulatory regions, based on which the new reg regions will be simulated
+	 * @param multiplicationFactor	how many random sequences per real sequence will be produced 
+	 * 		  (i.e. 2 will return twice as many fake genes as the real genes)
+	 * @param regionNamePrefix	prefix of the simulated reg regions names (counter will be 
+	 * 			appended for each individual name)
+	 * @return	set of simulated regulatory regions, where each region is modelled on one of the model sequences,
+	 * 			i.e. with the same composition and length 
+	 */
+	public static ArrayList<Feature> generateSimulatedMC1RegulatoryRegions(ArrayList<Feature> modelRegRegions, 
 									int multiplicationFactor, String regionNamePrefix) throws DataFormatException{
 		
 		if (multiplicationFactor <= 0) return null;
@@ -408,6 +442,7 @@ public class FeaturesTools {
 		
 		return simulatedRegRegions;
 	}
+
 
 	/* Generates a set of regulatory regions with simulated sequences
 	 * 

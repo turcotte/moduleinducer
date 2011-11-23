@@ -99,7 +99,7 @@ public class FeaturesToolsTest  extends TestCase {
 		model.add(new Feature("s2", Feature.TYPE_REGULATORY_REGION, "", 0, 0, "AAAAAAAAAGACTGACTGACTAGCTAGCTATATC", 7.5));
 		model.add(new Feature("s3", Feature.TYPE_REGULATORY_REGION, "", 0, 0, "ACCTAGCTAGCTATATC", 7.5));
 		try {
-			ArrayList<Feature> actual = FeaturesTools.generateSimulatedRegulatoryRegions(model, 2, "d");
+			ArrayList<Feature> actual = FeaturesTools.generateSimulatedMC1RegulatoryRegions(model, 2, "d");
 			
 			assertEquals(6, actual.size());
 			assertEquals(model.get(0).getSequence().length(), actual.get(0).getSequence().length());
