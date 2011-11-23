@@ -834,7 +834,7 @@ public class IlpService {
 				ilpTheory = ilpTheory + line + "\n";
 			}
 	
-/*			
+			
 			//Error stream
 			System.out.println("\n ***** Error stream ******");
 			BufferedReader inputErr = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
@@ -843,7 +843,7 @@ public class IlpService {
 				System.out.println(line);
 			}
 			System.out.println("***** End error stram *****");		
-*/			
+			
 			
 
 			

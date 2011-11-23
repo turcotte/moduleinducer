@@ -84,7 +84,7 @@ public class HomoSapiensRegRegionService implements RegulatoryRegionService {
 		// Start initializing
 		fileNamesSetUp();
 		positiveRegRegions = getRegRegions(positiveRegionsConstant);
-		negativeRegRegions = FeaturesTools.generateSimulatedRegulatoryRegions(positiveRegRegions, negExMultiplicationFactor, "simul_");
+		negativeRegRegions = FeaturesTools.generateSimulatedMC1RegulatoryRegions(positiveRegRegions, negExMultiplicationFactor, "simul_");
 		
 	}
 	

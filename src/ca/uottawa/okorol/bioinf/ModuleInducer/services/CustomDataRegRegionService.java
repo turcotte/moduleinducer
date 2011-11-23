@@ -21,6 +21,15 @@ public class CustomDataRegRegionService implements RegulatoryRegionService {
 	private ArrayList<Feature> negativeRegRegions;
 	
 	
+	public CustomDataRegRegionService(ArrayList<Feature> posExRegs, ArrayList<Feature> negExRegs) throws DataFormatException, IOException{
+		positiveRegRegions = posExRegs;
+		negativeRegRegions = negExRegs;
+		
+		validateRegions(positiveRegRegions, negativeRegRegions);
+		
+		//DataModeller.generateSimulatedRegulatoryRegions(positiveRegRegions, negExMultiplicationFactor, NEGATIVE_REGION_PREFIX);
+	}
+	
 	public CustomDataRegRegionService(InputStream posExIn, InputStream negExIn) throws DataFormatException, IOException{
 		positiveRegRegions = this.readRegulatoryRegions(posExIn);
 		negativeRegRegions = this.readRegulatoryRegions(negExIn);
@@ -31,22 +40,14 @@ public class CustomDataRegRegionService implements RegulatoryRegionService {
 	}
 	
 	public CustomDataRegRegionService(String posSequeces, String negSequences) throws DataFormatException, IOException{
-		positiveRegRegions = this.formatRegulatoryRegions(posSequeces);
-		negativeRegRegions = this.formatRegulatoryRegions(negSequences);
+		positiveRegRegions = formatRegulatoryRegions(posSequeces);
+		negativeRegRegions = formatRegulatoryRegions(negSequences);
 		
 		validateRegions(positiveRegRegions, negativeRegRegions);
 		
 		//DataModeller.generateSimulatedRegulatoryRegions(positiveRegRegions, negExMultiplicationFactor, NEGATIVE_REGION_PREFIX);
 	}
 	
-	public CustomDataRegRegionService(String posSequeces, int negExMultiplicationFactor) throws DataFormatException, IOException{
-		positiveRegRegions = this.formatRegulatoryRegions(posSequeces);
-		negativeRegRegions = FeaturesTools.generateSimulatedRegulatoryRegions(positiveRegRegions, negExMultiplicationFactor, "sim_");
-		
-		validateRegions(positiveRegRegions, negativeRegRegions);
-		
-		//DataModeller.generateSimulatedRegulatoryRegions(positiveRegRegions, negExMultiplicationFactor, NEGATIVE_REGION_PREFIX);
-	}
 	
 	
 	private void validateRegions(ArrayList<Feature> posRegRegions, ArrayList<Feature> negRegRegions) throws DataFormatException{
@@ -134,7 +135,7 @@ public class CustomDataRegRegionService implements RegulatoryRegionService {
 		return regRegion;
 	}
 
-	private ArrayList<Feature> formatRegulatoryRegions(String regSequences) throws IOException, DataFormatException{
+	public static ArrayList<Feature> formatRegulatoryRegions(String regSequences) throws IOException, DataFormatException{
 		
 		ArrayList<Feature> regRegion = new ArrayList<Feature>();
 		
