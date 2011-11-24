@@ -375,6 +375,10 @@ public class PatserRegElementService implements RegulatoryElementService {
 		// *** Get file names of all matrixes
 		final String[] matrixFileNames = new File(matrixFilesDir).list();
 		
+		if (matrixFileNames == null){
+			throw new DataFormatException("Patser Regulatory Element Service has no PSSMs associated with it.");
+		}
+		
 		for (int i = 0; i < matrixFileNames.length; i++) {
 			// Only read files with .matrix extension
 			if (!matrixFileNames[i].endsWith(SystemVariables.getInstance().getString("pwm.extension"))){
