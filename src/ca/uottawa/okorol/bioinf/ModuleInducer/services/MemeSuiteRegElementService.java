@@ -100,8 +100,8 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 					
 					// " 2>/dev/null" is to scrap the error stream, which gets flooded otherwise and causes the process to run away,
 					//	i.e. wait for the response from the caller (java), which never comes
-					final String dremeCmd = "./dreme -p " + seqFileName + " > " + dremeOutputFileName + " 2>/dev/null"; 
-//					final String dremeCmd = "./dreme -e 100 -p " + seqFileName + " > " + dremeOutputFileName + " 2>/dev/null"; 
+//					final String dremeCmd = "./dreme -p " + seqFileName + " > " + dremeOutputFileName + " 2>/dev/null"; 
+					final String dremeCmd = "./dreme -e 100 -p " + seqFileName + " > " + dremeOutputFileName + " 2>/dev/null"; 
 //					final String dremeCmd = "./dreme -p " + seqFileName + " -n " + bkgrSeqFileName + " > " + dremeOutputFileName + " 2>/dev/null"; 
 					
 					//System.out.println(dremeCmd + "\n");
@@ -116,7 +116,7 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 					System.out.println("DREME exit code: " + exitVal);
 					
 					if (FileHandling.fileContains(dremeOutputFileName, "0 motifs with E-value < ")){
-						throw new DataFormatException("No motifs were found.");
+						throw new DataFormatException("DREME did not find any motifs. ");
 					}
 					
 					
@@ -151,7 +151,10 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 			
 			
 	
-		} catch (Exception e) {
+		} catch (IOException e) {
+			System.out.println(e.toString());
+			e.printStackTrace();
+		} catch (InterruptedException e) {
 			System.out.println(e.toString());
 			e.printStackTrace();
 		}
