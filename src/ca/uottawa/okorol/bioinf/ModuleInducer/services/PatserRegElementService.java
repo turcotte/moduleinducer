@@ -38,7 +38,7 @@ public class PatserRegElementService implements RegulatoryElementService {
 		this.matrixFilesDir = pwmDir.getAbsolutePath(); //TODO
 	}
 	
-	/* Parses a string with multople PWMs and writes each pwm in an individual, Patser-approved file 
+	/* Parses a string with multiple PWMs and writes each pwm in an individual, Patser-approved file 
 	 * in a standard pwm directory, created inside a temporary directory specified.
 	 * 
 	 * @param pmws	String with one or more PWMs. The format of the String is:
@@ -462,69 +462,7 @@ public class PatserRegElementService implements RegulatoryElementService {
 	 * > matrixName
 	 * A | 10 20 30
 	 * C | 20 0 ...
-	 */
-	public static void savePwmFiles(String dirName, InputStream in) throws DataFormatException, IOException{
-		
-		BufferedReader input = new BufferedReader(new InputStreamReader(in));
-		
-		String line = null;
-		String pwmName = "";
-		int pwmLineCount = 0;
-		String pwmString = "";
-		
-		while ((line = input.readLine()) != null) { 
-			
-			if (!(line.matches("\\s*"))){ //ignore blank lines
-				
-				if (pwmName.isEmpty()) { // expecting and annotated line
-
-					StringTokenizer st = new StringTokenizer(line, " \t");
-					String token = st.nextToken();
-					
-					// Check for the line to start with ">" and read the first token after it. The rest of the line is ignored
-					if (!">".equals(token)){
-						throw new DataFormatException("PWM sequence is not in the correct format. Each PWM should be preceded by a line starting with \"> pwmName\"");
-					}
-					
-					if (st.hasMoreTokens()){
-						pwmName = st.nextToken();
-					}else {
-						throw new DataFormatException("PWM sequence is not in the correct format. PWM name should follow \">\".");
-					}
-					
-				} else { //expecting a pwm line
-
-					if (line.matches("[ACGT][\\t ]+\\|([\\t ]+[0-9]+)+")){
-						
-						pwmString = pwmString + line + "\n";
-						pwmLineCount++;
-						
-					} else {
-						throw new DataFormatException("At least one of the PWMs is not in the correct format. ");
-					}
-				}
-				
-				if (!pwmName.isEmpty() && pwmLineCount == 4){ // got all the info for writing a matrix
-					
-					BufferedWriter writer = new BufferedWriter(new FileWriter(dirName + pwmName + ".matrix"));
-					
-					writer.write(pwmString); 
-					
-					writer.close();
-					
-					pwmName = "";
-					pwmLineCount = 0;
-					pwmString = "";
-				
-				}
-				
-			}
-		}
-		
-	}
-	
-	
-	
+	 */	
 	public static void savePwmFiles(String dirName, String pwmsStr) throws DataFormatException, IOException{
 		
 		int maxPwmNum = Integer.parseInt(SystemVariables.getInstance().getString("regEl.max.pwm.num"));
@@ -532,6 +470,7 @@ public class PatserRegElementService implements RegulatoryElementService {
 		String line = null;
 		String pwmName = "";
 		int pwmLineCount = 0;
+		int pwmColNum = -1;
 		String pwmString = "";
 		StringTokenizer stMain = new StringTokenizer(pwmsStr, "\n\r");
 		int currPwmNum = 0;
@@ -549,24 +488,33 @@ public class PatserRegElementService implements RegulatoryElementService {
 					
 					// Check for the line to start with ">" and read the first token after it. The rest of the line is ignored
 					if (!">".equals(token)){
-						throw new DataFormatException("PWM sequence is not in the correct format. Each PWM should be preceded by a line starting with \"> pwmName\"");
+						throw new DataFormatException("Supplied PSSM(s) are not in the correct format. Each PSSM should be preceded by a line starting with \"> pssm_name\"");
 					}
 					
 					if (st.hasMoreTokens()){
 						pwmName = st.nextToken().trim();
 					}else {
-						throw new DataFormatException("PWM sequence is not in the correct format. PWM name should follow \">\".");
+						throw new DataFormatException("Supplied PSSM(s) are not in the correct format. PSSM name should follow \">\".");
 					}
 					
 				} else { //expecting a pwm line
 
 					if (line.matches("[ACGT][\\t ]+\\|([\\t ]+[0-9]+)+")){
 						
+						int currColNum = line.split("[\\t ]+").length;
+						if (pwmColNum < 0){
+							pwmColNum = currColNum;
+						} else {
+							if (currColNum != pwmColNum){
+								throw new DataFormatException("Supplied PSSM(s) are not in the correct format. Unequal length of rows in one PSSM.");
+							}
+						}
+						
 						pwmString = pwmString + line + "\n";
 						pwmLineCount++;
 						
 					} else {
-						throw new DataFormatException("At least one of the PWMs is not in the correct format. ");
+						throw new DataFormatException("Supplied PSSM(s) are not in the correct format. ");
 					}
 				}
 				
@@ -575,8 +523,8 @@ public class PatserRegElementService implements RegulatoryElementService {
 					currPwmNum++;
 					
 					if (currPwmNum > maxPwmNum){
-						throw new DataFormatException("Number of regulatory elements (PWMs) has exceeded the limit of " +
-								maxPwmNum + " elements.");
+						throw new DataFormatException("Number of biological markers (PSSMs) has exceeded the limit of " +
+								maxPwmNum + ".");
 					}
 					
 					BufferedWriter writer = new BufferedWriter(new FileWriter(dirName + pwmName + ".matrix"));
@@ -587,6 +535,7 @@ public class PatserRegElementService implements RegulatoryElementService {
 					
 					pwmName = "";
 					pwmLineCount = 0;
+					pwmColNum = -1;
 					pwmString = "";
 				
 				}
@@ -595,9 +544,90 @@ public class PatserRegElementService implements RegulatoryElementService {
 		}
 		
 	}
+
 	
-	
-	
+	public static void savePwmFiles(String dirName, InputStream in) throws DataFormatException, IOException{
+		StringBuffer out = new StringBuffer();
+		byte[] b = new byte[4096];
+		
+		for (int n; (n = in.read(b)) != -1;) {
+			out.append(new String(b, 0, n));
+		}
+
+		savePwmFiles(dirName, out.toString());
+	}
+	/* Phased out. Insted, convert the InputStream to a String and use a method for String
+	public static void savePwmFiles(String dirName, InputStream in) throws DataFormatException, IOException{
+		
+		BufferedReader input = new BufferedReader(new InputStreamReader(in));
+		
+		String line = null;
+		String pwmName = "";
+		int pwmLineCount = 0;
+		int pwmColNum = -1;
+		String pwmString = "";
+		
+		while ((line = input.readLine()) != null) { 
+			
+			if (!(line.matches("\\s*"))){ //ignore blank lines
+				
+				if (pwmName.isEmpty()) { // expecting and annotated line
+
+					StringTokenizer st = new StringTokenizer(line, " \t");
+					String token = st.nextToken();
+					
+					// Check for the line to start with ">" and read the first token after it. The rest of the line is ignored
+					if (!">".equals(token)){
+						throw new DataFormatException("Supplied PSSM(s) are not in the correct format. Each PSSM should be preceded by a line starting with \"> pssm_name\"");
+					}
+					
+					if (st.hasMoreTokens()){
+						pwmName = st.nextToken();
+					}else {
+						throw new DataFormatException("Supplied PSSM(s) are not in the correct format. PSSM name should follow \">\".");
+					}
+					
+				} else { //expecting a pwm line
+
+					if (line.matches("[ACGT][\\t ]+\\|([\\t ]+[0-9]+)+")){
+						
+						int currColNum = line.split("[\\t ]+").length;
+						if (pwmColNum < 0){
+							pwmColNum = currColNum;
+						} else {
+							if (currColNum != pwmColNum){
+								throw new DataFormatException("Supplied PSSM(s) are not in the correct format. Unequal length of rows in one PSSM.");
+							}
+						}
+						
+						pwmString = pwmString + line + "\n";
+						pwmLineCount++;
+						
+					} else {
+						throw new DataFormatException("Supplied PSSM(s) are not in the correct format. ");
+					}
+				}
+				
+				if (!pwmName.isEmpty() && pwmLineCount == 4){ // got all the info for writing a matrix
+					
+					BufferedWriter writer = new BufferedWriter(new FileWriter(dirName + pwmName + ".matrix"));
+					
+					writer.write(pwmString); 
+					
+					writer.close();
+					
+					pwmName = "";
+					pwmLineCount = 0;
+					pwmColNum = -1;
+					pwmString = "";
+				
+				}
+				
+			}
+		}
+		
+	}
+*/	
 	
 	/* Parses and saves an input stream of several PWMs. Each PWM is saved 
 	 * in separate file (for Patser)
