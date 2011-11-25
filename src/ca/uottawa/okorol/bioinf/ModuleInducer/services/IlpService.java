@@ -494,7 +494,6 @@ public class IlpService {
 					"	D1 > D-Offset,\n" +
 					"	D1 < D+Offset.\n\n" +
 					
-					//"range(0).\n" +
 					"range(0).\n" +
 					"range(1).\n" +
 					"range(2).\n" +
@@ -538,7 +537,88 @@ public class IlpService {
 			bw.write("% Types\n\n");
 
 			bw.write("strand('D'). \n" +
-					"strand('R').");
+					"strand('R').\n\n\n");
+			
+			bw.write("% % % % Printing functions to display the sequence information for all the positive examples \n" +
+					"% % % % that cover a rule in the theory \n" +
+					"% % % % To use:\n" +
+					"% % % % 	- screen dispaly: call mi_print right after the theory was induced.\n" +
+					"% % % % 	- write to file: call mi_pprint_to_file(FileName) right after the theory was induced.\n" +
+					"% % % % \n\n"); 
+
+			bw.write("mi_pprint_to_file(FileName) :- \n" +
+					"	telling(Old),\n" +
+					"	tell(FileName),\n" +
+					"	mi_pprint,\n" +
+					"	told,\n" +
+					"	tell(Old).\n\n");
+
+			bw.write("mi_pprint :-\n" +
+					"	mi_rules_sorted(Rules),\n" +
+					"	aleph_member(Cov-RuleNum,Rules),\n" +
+					"	'$aleph_global'(theory,theory(RuleNum,_,(positive(A):-Body),_,_)),\n" +
+					"	findall(A, Body, As),\n" +
+					"	write('-----------------------------------------------------------'), nl,\n" +
+					"	write('[Rule '), write(RuleNum), write('] '), write('[Coverage (pos and neg) '), write(Cov), write(']'), nl,\n" +
+					"	portray_clause((positive(A):-Body)), nl,\n" +
+					"	remove_duplicates(As, Bs),\n" +
+					"	mi_pprint_example(Bs), nl, nl,\n" +
+					"	fail.\n");
+			
+			bw.write("mi_pprint.\n\n\n");
+
+
+			bw.write("%% SortedRls is a list of Key-Value elements where Key is the rule coverage, and Value is rule number \n");
+			bw.write("mi_rules_sorted(SortedRls) :- \n" +
+					"	'$aleph_global'(rules,rules(R1)),\n" +
+					"	aleph_reverse(R1,R2), % don't need this, but Aleph does some magic here\n" +
+					"	mi_rules_with_coverage(R2, R3),\n" +
+					"	keysort(R3, R4),\n" +
+					"	aleph_reverse(R4,SortedRls).\n\n\n");
+
+
+			bw.write("mi_rules_with_coverage([], []).\n");
+			bw.write("mi_rules_with_coverage([H|T1], [Cov-H|T2]) :- \n" +
+					"	'$aleph_global'(theory,theory(H,_,(positive(A):-Body),_,_)), \n" +
+					"	findall(A, Body, As),\n" +
+					"	remove_duplicates(As, Bs),\n" +
+					"	length(Bs, Cov),\n" +
+					"	%write(Cov), write('-'), write(H),nl,\n" +
+					"	mi_rules_with_coverage(T1, T2).\n\n");
+				
+
+			bw.write("mi_pprint_example([A|As]) :-\n" +
+					"	seq(A, Chr, Start, Len),\n" +
+					"	write(Chr), write('\t'),\n" +
+					"	write(Start), write('\t'),\n" +
+					"	End is Start+Len+1,\n" +
+					"	write(End), write('\t'),\n" +
+					"	write(A), nl,\n" +
+					"	mi_pprint_example(As).\n");
+			bw.write("mi_pprint_example([]) :- !.\n\n\n");
+
+			bw.write("% The following two predicates are from Yap lists module.\n\n");
+
+			bw.write("%   delete(List, Elem, Residue)\n" +
+					"%   is true when List is a list, in which Elem may or may not occur, and\n" +
+					"%   Residue is a copy of List with all elements identical to Elem deleted.\n\n");
+
+			bw.write("delete([], _, []).\n");
+			bw.write("delete([Head|List], Elem, Residue) :-\n" +
+					"	Head == Elem, !,\n" +
+					"	delete(List, Elem, Residue).\n");
+			bw.write("delete([Head|List], Elem, [Head|Residue]) :-\n" +
+					"	delete(List, Elem, Residue).\n\n");
+
+
+			bw.write("%   remove_duplicates(List, Pruned) \n" +
+					"%   removes duplicated elements from List.  Beware: if the List has\n" +
+					"%   non-ground elements, the result may surprise you.\n\n");
+
+			bw.write("remove_duplicates([], []).\n");
+			bw.write("remove_duplicates([Elem|L], [Elem|NL]) :- \n" +
+					"	delete(L, Elem, Temp),\n" +
+					"	remove_duplicates(Temp, NL).\n\n");
 			
 			bw.close();
 			
