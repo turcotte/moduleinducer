@@ -3,5 +3,3 @@ syntax: regexp
 ^tmp$
 syntax: regexp
 ^src/ca/uottawa/okorol/bioinf/ModuleInducer/properties/SystemVariables\.properties$
-syntax: regexp
-^src/ca/uottawa/okorol/bioinf/ModuleInducer/properties/SystemVariables\.properties$
