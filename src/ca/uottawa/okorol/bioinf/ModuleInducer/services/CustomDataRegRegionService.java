@@ -104,13 +104,13 @@ public class CustomDataRegRegionService implements RegulatoryRegionService {
 					
 					// Check for the line to start with ">" and read the first token after it. The rest of the line is ignored
 					if (!">".equals(token)){
-						throw new DataFormatException("Sequence file is not in the correct format. Each sequence should be preceded by a line starting with \"> sequenceName\"");
+						throw new DataFormatException("Supplied sequences are not in the correct format. Each sequence should be preceded by a description line starting with \"> sequenceName\"");
 					}
 					
 					if (st.hasMoreTokens()){
 						sequenceName = st.nextToken();
 					}else {
-						throw new DataFormatException("Sequence file is not in the correct format. Sequence name should follow \">\".");
+						throw new DataFormatException("Supplied sequences are not in the correct format. Sequence name should follow \">\" on the description line.");
 					}
 					
 				} else { //expecting a sequence line
@@ -121,11 +121,15 @@ public class CustomDataRegRegionService implements RegulatoryRegionService {
 						throw new DataFormatException("Sequence format exception: individual sequence length is temporarily limited to "+maxSeqLen+" nucleotides.");
 					}
 					
+					if(line.startsWith(">")){
+						throw new DataFormatException("Supplied sequences are not in the correct format. Description line should be followed by a sequence on the next line. ");
+					}
+					
 					if (line.matches("[ACGTacgt]*")){
 						regRegion.add(new Feature(sequenceName, Feature.TYPE_REGULATORY_REGION, "", 0, 0, line, 0.0));
 						sequenceName = "";
 					} else {
-						throw new DataFormatException("Some of the provided sequences are not in the correct format. Expecting {A,C,G,T,a,c,g,t}.");
+						throw new DataFormatException("Supplied sequences are not in the correct format. Expecting {A,C,G,T,a,c,g,t}.");
 					}
 				}
 				
@@ -151,7 +155,7 @@ public class CustomDataRegRegionService implements RegulatoryRegionService {
 				if (sequenceName.isEmpty()) { // expecting and annotated line
 					
 					if (!line.startsWith(">")){
-						throw new DataFormatException("Sequence file is not in the correct format. Each sequence should be preceded by a line starting with \"> sequenceName\"");
+						throw new DataFormatException("Supplied sequences are not in the correct format. Each sequence should be preceded by a description line starting with \"> sequenceName\"");
 					}
 					
 					line = line.substring(1); //remove > from the beginning of the line
@@ -162,7 +166,7 @@ public class CustomDataRegRegionService implements RegulatoryRegionService {
 					if (st.hasMoreTokens()){
 						sequenceName = st.nextToken().trim();
 					}else {
-						throw new DataFormatException("Sequence file is not in the correct format. Sequence name should follow \">\".");
+						throw new DataFormatException("Supplied sequences are not in the correct format. Sequence name should follow \">\" on the description line.");
 					}
 					
 				} else { //expecting a sequence line
@@ -173,11 +177,15 @@ public class CustomDataRegRegionService implements RegulatoryRegionService {
 						throw new DataFormatException("Sequence format exception: individual sequence length is limited to "+maxSeqLen+" nucleotides.");
 					}
 					
+					if(line.startsWith(">")){
+						throw new DataFormatException("Supplied sequences are not in the correct format. Description line should be followed by a sequence on the next line. ");
+					}
+					
 					if (line.matches("[ACGTacgt]+")){
 						regRegion.add(new Feature(sequenceName, Feature.TYPE_REGULATORY_REGION, "", 0, 0, line, 0.0));
 						sequenceName = "";
 					} else {
-						throw new DataFormatException("Some of the provided sequences are not in the correct format. Expecting {A,C,G,T,a,c,g,t}.");
+						throw new DataFormatException("Supplied sequences are not in the correct format. Expecting {A,C,G,T,a,c,g,t}.");
 					}
 				}
 				
