@@ -101,7 +101,7 @@ public class FileHandling {
 	
 	public static String createTempWebIlpOutputDirectory() throws DataFormatException{
 		String tmpDirName = getDefaultTempWebIlpOutputDirectoryName();
-		
+
 		return createDirectory(tmpDirName);
 	}
 	
