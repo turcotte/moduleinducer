@@ -34,7 +34,11 @@ public class PatserRegElementService implements RegulatoryElementService {
 	 * @param pwmDir	name of the directory, which contains one or more pwm files
 	 */
 	public PatserRegElementService(File pwmDir, String tempJobDir) throws DataFormatException{
-		this.tempPatserOutputDir = FileHandling.createTempPatserOutputDirectory(tempJobDir);
+		
+		if (tempJobDir != null && !tempJobDir.isEmpty()){	//workaround for the web interface bean:
+			// to load example data we only need pwm dir to extract pwm info
+			this.tempPatserOutputDir = FileHandling.createTempPatserOutputDirectory(tempJobDir);
+		}
 		this.matrixFilesDir = pwmDir.getAbsolutePath(); //TODO
 	}
 	
@@ -63,6 +67,9 @@ public class PatserRegElementService implements RegulatoryElementService {
 	private String createSequencesFile(ArrayList<Feature> regRegions) throws DataFormatException{
 		if (regRegions == null){
 			throw new DataFormatException("Can not create regulatory sequences file for PATSER. No regulatory regions were supplied."); 
+		}
+		if (tempPatserOutputDir == null || tempPatserOutputDir.isEmpty()){ // in case the constructor workaround was used
+			throw new DataFormatException("Can not create regulatory sequences file for PATSER. No temporary output directory was set."); 
 		}
 		
 		String seqFileName = tempPatserOutputDir + SystemVariables.getInstance().getString("patser.tmp.seq.output.file.name")
