@@ -57,6 +57,8 @@ public class IlpService {
 		String winIlpScriptFileName = ilpDirName + SystemVariables.getInstance().getString("ilp.win.script.file.name");
 		
 		String htmlResultsFileName = ilpDirName + SystemVariables.getInstance().getString("html.results.file.name");
+		String htmlHeaderFileName = ilpDirName + SystemVariables.getInstance().getString("html.header.file.name");
+		String htmlFooterFileName = ilpDirName + SystemVariables.getInstance().getString("html.footer.file.name");
 
 		//** Write prolog background rules
 		writeBRulesFile();
@@ -77,11 +79,19 @@ public class IlpService {
 		writeExamplesFile(nFileName, negRegRegions);
 		
 		//** Write run scripts
-		writeMacIlpScript(macIlpScriptFileName);
-		writeWinIlpScript(winIlpScriptFileName);
+		writeFile(macIlpScriptFileName, getMacScriptContents());
+		//writeMacIlpScript(macIlpScriptFileName);
+		//writeWinIlpScript(winIlpScriptFileName);
 		
-		//** Write htlm results page
-		writeInitialResultsPage(htmlResultsFileName);
+		//** Write initial htlm results page
+		writeFile(htmlResultsFileName, getHTMLResultsHeader() + getHTMLResultsTempBody() +getHTMLResultsFooter());
+		//writeInitialResultsPage(htmlResultsFileName);
+		
+		
+		//** Write header and footer files for a script to display final result
+		writeFile(htmlHeaderFileName, getHTMLResultsHeader());
+		writeFile(htmlFooterFileName, getHTMLResultsFooter());
+		
 		
 		
 	}
@@ -305,6 +315,23 @@ public class IlpService {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	private void writeFile(String fileName, String fileContents){
+		BufferedWriter bw = null;
+		
+		try {
+			
+			bw = new BufferedWriter(new FileWriter(fileName));
+			bw.write(fileContents);
+			
+			
+			bw.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 
 
@@ -323,23 +350,10 @@ public class IlpService {
 	 * 								if null or empty string, theory output will not be written to a file
 	 */	
 	private void writeBfile(String fileName, ArrayList<Feature> posRegRegions, ArrayList<Feature> negRegRegions,
-			ArrayList<Feature> posRegulatoryElemets, ArrayList<Feature> negRegulatoryElements, String outputTheoryFileName){
+			ArrayList<Feature> posRegulatoryElemets, ArrayList<Feature> negRegulatoryElements, String outputTheoryFileName) throws DataFormatException{
 		
-		BufferedWriter bw = null;
-		
-		try {
-			
-			bw = new BufferedWriter(new FileWriter(fileName));
-			bw.write(getBfileContents(posRegRegions, negRegRegions, posRegulatoryElemets, negRegulatoryElements, outputTheoryFileName));
-			
-			
-			bw.close();
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (DataFormatException e) {
-			e.printStackTrace();
-		}
+			String bFileContents = getBfileContents(posRegRegions, negRegRegions, posRegulatoryElemets, negRegulatoryElements, outputTheoryFileName);
+			writeFile(fileName, bFileContents);
 	}
 	
 	
@@ -776,7 +790,31 @@ public class IlpService {
 	}
 	
 	
-	
+	private String getMacScriptContents() throws DataFormatException{
+		String alephDir = SystemVariables.getInstance().getString("ilp.install.dir");
+		String swiplPath = SystemVariables.getInstance().getString("swipl.install.dir");
+		
+		String str = "#!/bin/bash \n" +
+				"export PATH=" + swiplPath + ":$PATH\n" +
+				"swipl <<EOF\n" +
+				"['" + alephDir + "aleph'].\n" +
+				"[ilpBackground].\n" +
+				"read_all(moduleInducer), induce, mi_pprint_to_file('theory_seq_info.txt'), mi_pprint, halt.\n" +
+				"EOF\n\n" +
+				"cat template_header.html > template.html \n\n" +
+				"if [ -f theory_seq_info.txt ]\n" +
+				"then \n" +
+				"    cat theory_seq_info.txt >> template.html \n" +
+				"else \n" +
+				"    echo 'Internal error' >> template.html \n" +
+				"fi \n \n" +
+				"cat template_footer.html >> template.html \n\n" +
+				"rm -f index.html \n" +
+				"mv template.html index.html"
+		;
+		
+		return str;
+	}
 	
 	private void writeMacIlpScript(String fileName) throws DataFormatException{
 		BufferedWriter bw = null;
@@ -841,6 +879,27 @@ public class IlpService {
 		}
 	}
 	
+	private String getHTMLResultsHeader(){
+		String str = "<html><head>	<title>Module Inducer: Results</title>	<meta http-equiv=\"Refresh\" content=\"5\" /></head><body><div style=\"border-style:solid; border-width:1px; border-color: #348017;  font-family: Verdana, Geneva, sans-serif; text-align: center; font-size: 9pt;\">" +
+				"	<h2 style=\"text-align: center;  font-family: Verdana, Geneva, sans-serif; font-size: 13pt;\">Module Inducer</h2>	Extract knowledge from biological data.<br/>	Oksana Korol and Marcel Turcotte, University of Ottawa	<br/>&nbsp;</div>	" +
+				"<div style=\"margin: 2em 2em 2em 2em; font-family: Verdana, Geneva, sans-serif; \"><pre>";
+		
+		return str;
+	}
+	
+	private String getHTMLResultsTempBody(){
+		String str = "<br/> Your results will appear shortly.<br/>";
+		
+		return str;
+	}
+	
+	private String getHTMLResultsFooter(){
+		String str = "</pre></div></body></html>";
+		
+		return str;
+	}
+	
+	
 	
 	public static void writeInitialResultsPage(String fileName){
 		BufferedWriter bw = null;
@@ -863,9 +922,9 @@ public class IlpService {
 
 			bw.write("<div style=\"border-style:solid; border-width:1px; border-color: #348017;  font-family: Verdana, Geneva, sans-serif; text-align: center; font-size: 9pt;\">");
 			bw.write("\t<h2 style=\"text-align: center;  font-family: Verdana, Geneva, sans-serif; font-size: 13pt;\">Module Inducer</h2>");
-			bw.write("\tExtract knowledge from biological data.<br/>");
+			bw.write("\t<br/>Generated from MI <br/>Extract knowledge from biological data.<br/>");
 			bw.write("\tOksana Korol and Marcel Turcotte, University of Ottawa");
-			bw.write("\t<br/>&nbsp;");
+			bw.write("\t<br/>");
 			bw.write("</div>");
 				
 			bw.write("\t<div style=\"margin: 2em 2em 2em 2em; font-family: Verdana, Geneva, sans-serif; \">");
@@ -895,7 +954,7 @@ public class IlpService {
 			File ilpDir = new File(ilpDirName);
 			
 			if (System.getProperty("os.name").startsWith("Mac")){
-				final String cmd = "./runILP.sh 2>/dev/null";	
+				final String cmd = "sh runILP.sh 2>/dev/null";	
 				
 				 pr = rt.exec(new String[] { "/bin/sh", "-c", cmd }, null, ilpDir);
 				
