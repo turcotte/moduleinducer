@@ -54,11 +54,10 @@ public class CustomDataRegRegionService implements RegulatoryRegionService {
 		
 		int maxSeqNum = Integer.parseInt(SystemVariables.getInstance().getString("regRegion.max.num.of.sequences"));
 		
-		if (positiveRegRegions.size() > maxSeqNum || negativeRegRegions.size() > maxSeqNum){
-			
-			throw new DataFormatException("Number of sequences has exceeded the limit of " +
-					maxSeqNum + " sequences.");
-		}
+//		if (positiveRegRegions.size() > maxSeqNum || negativeRegRegions.size() > maxSeqNum){	
+//			throw new DataFormatException("Number of sequences has exceeded the limit of " +
+//					maxSeqNum + " sequences.");
+//		}
 		
 		if (!FeaturesTools.areNamesDistinct(positiveRegRegions, negativeRegRegions)){
 			throw new DataFormatException("Positive and negative sequences should have unique names.");

@@ -178,9 +178,9 @@ public class Explorer{
 		System.out.println("== Created all ILP files. Starting to induce.");
 		
 		String ilpTheory = ilpService.runILP();		
-		return ilpTheory;
+//		return ilpTheory;
 		
-//		return "Done";
+		return "Done";
 	}
 	
 
