@@ -15,6 +15,7 @@ import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
 import ca.uottawa.okorol.bioinf.ModuleInducer.exceptions.DataFormatException;
 import ca.uottawa.okorol.bioinf.ModuleInducer.properties.SystemVariables;
 import ca.uottawa.okorol.bioinf.ModuleInducer.tools.FeaturesTools;
+import ca.uottawa.okorol.bioinf.ModuleInducer.tools.FileHandling;
 import ca.uottawa.okorol.bioinf.ModuleInducer.tools.StatAnalyser;
 
 public class IlpService {
@@ -56,9 +57,7 @@ public class IlpService {
 		String macIlpScriptFileName = ilpDirName + SystemVariables.getInstance().getString("ilp.mac.script.file.name");
 		String winIlpScriptFileName = ilpDirName + SystemVariables.getInstance().getString("ilp.win.script.file.name");
 		
-		String htmlResultsFileName = ilpDirName + SystemVariables.getInstance().getString("html.results.file.name");
-		String htmlHeaderFileName = ilpDirName + SystemVariables.getInstance().getString("html.header.file.name");
-		String htmlFooterFileName = ilpDirName + SystemVariables.getInstance().getString("html.footer.file.name");
+		
 
 		//** Write prolog background rules
 		writeBRulesFile();
@@ -79,18 +78,9 @@ public class IlpService {
 		writeExamplesFile(nFileName, negRegRegions);
 		
 		//** Write run scripts
-		writeFile(macIlpScriptFileName, getMacScriptContents());
+		FileHandling.writeFile(macIlpScriptFileName, getMacScriptContents());
 		//writeMacIlpScript(macIlpScriptFileName);
 		//writeWinIlpScript(winIlpScriptFileName);
-		
-		//** Write initial htlm results page
-		writeFile(htmlResultsFileName, getHTMLResultsHeader() + getHTMLResultsTempBody() +getHTMLResultsFooter());
-		//writeInitialResultsPage(htmlResultsFileName);
-		
-		
-		//** Write header and footer files for a script to display final result
-		writeFile(htmlHeaderFileName, getHTMLResultsHeader());
-		writeFile(htmlFooterFileName, getHTMLResultsFooter());
 		
 		
 		
@@ -316,22 +306,7 @@ public class IlpService {
 		}
 	}
 	
-	
-	private void writeFile(String fileName, String fileContents){
-		BufferedWriter bw = null;
-		
-		try {
-			
-			bw = new BufferedWriter(new FileWriter(fileName));
-			bw.write(fileContents);
-			
-			
-			bw.close();
-			
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+
 
 
 
@@ -353,7 +328,7 @@ public class IlpService {
 			ArrayList<Feature> posRegulatoryElemets, ArrayList<Feature> negRegulatoryElements, String outputTheoryFileName) throws DataFormatException{
 		
 			String bFileContents = getBfileContents(posRegRegions, negRegRegions, posRegulatoryElemets, negRegulatoryElements, outputTheoryFileName);
-			writeFile(fileName, bFileContents);
+			FileHandling.writeFile(fileName, bFileContents);
 	}
 	
 	
@@ -573,10 +548,17 @@ public class IlpService {
 					"	'$aleph_global'(theory,theory(RuleNum,_,(positive(A):-Body),_,_)),\n" +
 					"	findall(A, Body, As),\n" +
 					"	write('-----------------------------------------------------------'), nl,\n" +
-					"	write('[Rule '), write(RuleNum), write('] '), write('[Coverage (pos and neg) '), write(Cov), write(']'), nl,\n" +
+					"	label_create((positive(A):-Body),Label1), \n" +
+					"	extract_count(pos,Label1,PosCov), \n" +
+					"	extract_count(neg,Label1,NegCov), \n" +
+					"	write('[Rule '), write(RuleNum), write('] '), write('[Pos cover = '), \n" +
+					"	write(PosCov), write('  Neg cover = '), write(NegCov), write(']'), nl, \n" +
+					"%	write('Total coverage: '), write(Cov), nl,\n" +
 					"	portray_clause((positive(A):-Body)), nl,\n" +
-					"	remove_duplicates(As, Bs),\n" +
-					"	mi_pprint_example(Bs), nl, nl,\n" +
+					"	remove_duplicates(As, Bs),\n " +
+					"	write('Sequences that cover the rule: '), nl, \n" +
+					"%	mi_pprint_example(Bs), nl, nl,\n" +
+					"	mi_pprint_example_short(Bs), nl, nl, \n" +
 					"	fail.\n");
 			
 			bw.write("mi_pprint.\n\n\n");
@@ -599,8 +581,16 @@ public class IlpService {
 					"	length(Bs, Cov),\n" +
 					"	%write(Cov), write('-'), write(H),nl,\n" +
 					"	mi_rules_with_coverage(T1, T2).\n\n");
-				
+			
+			bw.write("%% Prints only the sequence names, separated by coma \n");
+			bw.write("mi_pprint_example_short([A|As]) :- \n" +
+					"	seq(A), \n" +
+					"	write(A), write(', '), \n" +
+					"	mi_pprint_example_short(As). \n");
+			bw.write("mi_pprint_example_short([]) :- !. \n");
 
+
+			bw.write("%% Prints full sequence info \n");	
 			bw.write("mi_pprint_example([A|As]) :-\n" +
 					"	seq(A, Chr, Start, Len),\n" +
 					"	write(Chr), write('\t'),\n" +
@@ -799,7 +789,7 @@ public class IlpService {
 				"swipl <<EOF\n" +
 				"['" + alephDir + "aleph'].\n" +
 				"[ilpBackground].\n" +
-				"read_all(moduleInducer), induce, mi_pprint_to_file('theory_seq_info.txt'), mi_pprint, halt.\n" +
+				"read_all(moduleInducer), induce, mi_pprint_to_file('theory_seq_info.txt'), halt.\n" +
 				"EOF\n\n" +
 				"cat template_header.html > template.html \n\n" +
 				"if [ -f theory_seq_info.txt ]\n" +
@@ -828,7 +818,7 @@ public class IlpService {
 			
 			bw = new BufferedWriter(new FileWriter(scriptFile));
 			
-			bw.write("% Background model \n\n");
+			
 			
 			bw.write("#!/bin/bash\n"); 
 			bw.write("export PATH=" + swiplPath + ":$PATH\n"); 
@@ -877,26 +867,6 @@ public class IlpService {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	private String getHTMLResultsHeader(){
-		String str = "<html><head>	<title>Module Inducer: Results</title>	<meta http-equiv=\"Refresh\" content=\"5\" /></head><body><div style=\"border-style:solid; border-width:1px; border-color: #348017;  font-family: Verdana, Geneva, sans-serif; text-align: center; font-size: 9pt;\">" +
-				"	<h2 style=\"text-align: center;  font-family: Verdana, Geneva, sans-serif; font-size: 13pt;\">Module Inducer</h2>	Extract knowledge from biological data.<br/>	Oksana Korol and Marcel Turcotte, University of Ottawa	<br/>&nbsp;</div>	" +
-				"<div style=\"margin: 2em 2em 2em 2em; font-family: Verdana, Geneva, sans-serif; \"><pre>";
-		
-		return str;
-	}
-	
-	private String getHTMLResultsTempBody(){
-		String str = "<br/> Your results will appear shortly.<br/>";
-		
-		return str;
-	}
-	
-	private String getHTMLResultsFooter(){
-		String str = "</pre></div></body></html>";
-		
-		return str;
 	}
 	
 	
@@ -954,7 +924,8 @@ public class IlpService {
 			File ilpDir = new File(ilpDirName);
 			
 			if (System.getProperty("os.name").startsWith("Mac")){
-				final String cmd = "sh runILP.sh 2>/dev/null";	
+//				final String cmd = "sh runILP.sh 2>/dev/null";	
+				final String cmd = "sh runILP.sh 2>1 1> /dev/null";	
 				
 				 pr = rt.exec(new String[] { "/bin/sh", "-c", cmd }, null, ilpDir);
 				
@@ -965,7 +936,7 @@ public class IlpService {
 				
 			}
 	
-			
+			/*			
 			// Normal Stream
 			BufferedReader input = new BufferedReader(new InputStreamReader(pr.getInputStream()));
 			String line = null;			
@@ -984,13 +955,11 @@ public class IlpService {
 			System.out.println("***** End error stram *****");		
 			
 			
-
-			
-
 			
 			exitVal = pr.waitFor();
 //			System.out.println("Exited with error code " + exitVal);
 			
+	 */
 		} catch (Exception e) {
 			System.out.println(e.toString());
 			e.printStackTrace();
@@ -1001,8 +970,38 @@ public class IlpService {
 	}
 
 
+	/* Only works for Mac
+	 * 
+	 */
+/*	
+	public String runILP(){
+		ILPRunner ilpRunner = new ILPRunner(); 
+		Thread myThread = new Thread(ilpRunner);
+		myThread.start();
+		return "";
+	}
+	
+	class ILPRunner implements Runnable{
+		public void run(){
+			File ilpDir = new File(ilpDirName);
+			final String cmd = "nohup sh runILP.sh 2>/dev/null &";	
+			
+			try {
+				Process pr = Runtime.getRuntime().exec(new String[] { "/bin/sh", "-c", cmd }, null, ilpDir);
+				pr.waitFor();
+			} catch (IOException e) {
+				System.out.println(e.toString());
+				e.printStackTrace();
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+	}
+*/	
+	
 }
-
 
 
 

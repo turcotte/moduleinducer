@@ -56,6 +56,26 @@ public class FileHandling {
 		return dirName;
 	}
 	
+	/* Writes a string to a file
+	 * @param fileName - file name with the full path
+	 * @param fileContents - string to write
+	 */
+	public static void writeFile(String fileName, String fileContents){
+		BufferedWriter bw = null;
+		
+		try {
+			
+			bw = new BufferedWriter(new FileWriter(fileName));
+			bw.write(fileContents);
+			
+			
+			bw.close();
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 	
 	public static String getDefaultTempIlpOutputDirectoryName() throws DataFormatException{
@@ -105,6 +125,32 @@ public class FileHandling {
 		return createDirectory(tmpDirName);
 	}
 	
+	/* Creates an index.html file, which tells that the results will be there shortly.
+	 * Also creates a header and footer files for the script to re-write the index.html
+	 * when the results are ready.
+	 * @param jobDir - directory created for the job, where the results will be written; 
+	 * 				  should end with "/"
+	 * @return name of the result page (without full path)
+	 */
+	public static String createPreliminaryResultsWebPage(String jobDir) throws DataFormatException {
+		
+		String htmlResultsFileName = jobDir + SystemVariables.getInstance().getString("html.results.file.name");
+		String htmlHeaderFileName = jobDir + SystemVariables.getInstance().getString("html.header.file.name");
+		String htmlFooterFileName = jobDir + SystemVariables.getInstance().getString("html.footer.file.name");
+		
+		
+		//** Write initial htlm results page
+		writeFile(htmlResultsFileName, getHTMLResultsHeader() + getHTMLResultsTempBody() +getHTMLResultsFooter());
+		//writeInitialResultsPage(htmlResultsFileName);
+		
+		
+		//** Write header and footer files for a script to display final result
+		writeFile(htmlHeaderFileName, getHTMLResultsHeader());
+		writeFile(htmlFooterFileName, getHTMLResultsFooter());
+		
+		return SystemVariables.getInstance().getString("html.results.file.name");
+	}
+	
 	/* Creates a directory for the pwms in the temporary job directory specified.
 	 */
 	public static String createTempPwmDirectory(String tempPatserOutputDir) throws DataFormatException{
@@ -127,6 +173,32 @@ public class FileHandling {
 	}
 	
 	
+	private static String getHTMLResultsHeader(){
+		String str = "<html><head>	<title>Module Inducer: Results</title>	<meta http-equiv=\"Refresh\" content=\"5\" /></head><body><div style=\"border-style:solid; border-width:1px; border-color: #348017;  font-family: Verdana, Geneva, sans-serif; text-align: center; font-size: 9pt;\">" +
+				"	<h2 style=\"text-align: center;  font-family: Verdana, Geneva, sans-serif; font-size: 13pt;\">Module Inducer</h2>	Extract knowledge from biological data.<br/>	Oksana Korol and Marcel Turcotte, University of Ottawa	<br/>&nbsp;</div>	" +
+				"<div style=\"margin: 2em 2em 2em 2em; font-family: Verdana, Geneva, sans-serif; \"><pre>";
+		
+		return str;
+	}
+	
+	private static String getHTMLResultsTempBody(){
+		String str = "<br/>Your results will appear on this page. <br/><br/>" +
+				"The time that it will take for the results to appear can vary greatly: <br/>" +
+				"from several minutes (for small number of sequences with supplied motif PSSMs) <br/>" +
+				"to more than a day, if the dataset is large and/or motifs need to be discovered. <br/><br/>" +
+				"Please save the link to this page to return to it later. <br/><br/>" +
+				"Note: if the results do not appear in more than a day, your data might be too <br/>" +
+				"large to run through the web interface. Please contact okoro103 at uottawa.ca or <br/>" +
+				"turcotte at eecs.uottawa.ca to arrange for an off-line run.<br/>";
+		
+		return str;
+	}
+	
+	private static String getHTMLResultsFooter(){
+		String str = "</pre></div></body></html>";
+		
+		return str;
+	}
 	
 	
 	public static boolean writeLogFile(String fileName) throws IOException, DataFormatException{

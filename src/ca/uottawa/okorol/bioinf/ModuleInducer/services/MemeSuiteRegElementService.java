@@ -74,15 +74,15 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 	 */
 	public ArrayList<Feature> getRegulatoryElements(ArrayList<Feature> regRegions, ArrayList<Feature> backgroundRegRegions, double cutOffScore) throws DataFormatException {
 		
-		final String seqFileName = tempMemeOutputDir + SystemVariables.getInstance().getString("meme.tmp.seq.output.file.name.prefix") + "Pos" + System.currentTimeMillis();
-		final String bkgrSeqFileName = tempMemeOutputDir + SystemVariables.getInstance().getString("meme.tmp.seq.output.file.name.prefix") + "Neg" + System.currentTimeMillis();
-		final String dremeOutputFileName = tempMemeOutputDir + SystemVariables.getInstance().getString("dreme.output.file.name");
-		final String fimoOutputDir = tempMemeOutputDir + "fimo_out" + System.currentTimeMillis() + "/";
+		// File names are relative to  tempMemeOutputDir (providing full names causes production version (MacMini_induce) of script runs to fail due to long file names
+		final String seqFileName = SystemVariables.getInstance().getString("meme.tmp.seq.output.file.name.prefix") + "Pos" + System.currentTimeMillis();
+		final String bkgrSeqFileName = SystemVariables.getInstance().getString("meme.tmp.seq.output.file.name.prefix") + "Neg" + System.currentTimeMillis();
+		final String dremeOutputFileName = "dreme_out/dreme.txt";;
+		final String fimoOutputDir = "fimo_out" + System.currentTimeMillis() + "/";
 		
 		// *** Write sequences into a fasta file
-		createSequencesFile(regRegions, seqFileName);
-		createSequencesFile(backgroundRegRegions, bkgrSeqFileName);
-		
+		createSequencesFile(regRegions, tempMemeOutputDir + seqFileName);
+		createSequencesFile(backgroundRegRegions, tempMemeOutputDir + bkgrSeqFileName);
 
 		try {
 			Runtime rt = Runtime.getRuntime();
@@ -96,18 +96,21 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 
 				
 				// *** Discover motifs using DREME 
+				//		(see http://meme.sdsc.edu/meme/doc/overview.html or docs in the meme install dir)
 				if (backgroundRegRegions != null) { //i.e. if we already have the results of a DREME run in a temp dir
 					
-					// " 2>/dev/null" is to scrap the error stream, which gets flooded otherwise and causes the process to run away,
-					//	i.e. wait for the response from the caller (java), which never comes
-//					final String dremeCmd = "./dreme -p " + seqFileName + " > " + dremeOutputFileName + " 2>/dev/null"; 
-					final String dremeCmd = "./dreme -e 100 -p " + seqFileName + " > " + dremeOutputFileName + " 2>/dev/null"; 
-//					final String dremeCmd = "./dreme -p " + seqFileName + " -n " + bkgrSeqFileName + " > " + dremeOutputFileName + " 2>/dev/null"; 
+					// 2>1 1>/dev/null - merge error output stream with normal output stream; then scrap normal output. Reason: 
+					//		not to flood the input streams, which causes the process to run away (i.e. wait for the response from the 
+					//		caller (java), which never comes)
+					final String dremeCmd = memeInstallDirName + "dreme -e 100 -p " + seqFileName + " 2>1  1>/dev/null"; 
 					
-					//System.out.println(dremeCmd + "\n");
-					System.out.println("Starting DREME execution.");
-					pr = rt.exec(new String[] { "/bin/sh", "-c", dremeCmd }, null, new File(memeInstallDirName)); 
-	
+
+					System.out.println("Starting DREME execution. DREME command:\n"+ dremeCmd + "\n");
+					
+					// Execute in the temp job directory with relative paths to the file; providing full names causes production version (MacMini_induce)
+					// to fail due to long file names
+					pr = rt.exec(new String[] { "/bin/sh", "-c", dremeCmd }, null, new File(tempMemeOutputDir)); 
+
 
 					// 0 -success
 					// 1-127 - job itself called exit()
@@ -115,7 +118,8 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 					exitVal = pr.waitFor();
 					System.out.println("DREME exit code: " + exitVal);
 					
-					if (FileHandling.fileContains(dremeOutputFileName, "0 motifs with E-value < ")){
+
+					if (FileHandling.fileContains(tempMemeOutputDir + dremeOutputFileName, "0 motifs with E-value < ")){
 						throw new DataFormatException("DREME did not find any motifs. ");
 					}
 					
@@ -123,15 +127,18 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 				}
 				
 				
-				// *** Locate motifs, discovered by Dreme, using FIMO
-				// " 2>/dev/null" is to scrap the error stream, which gets flooded otherwise and causes the process to run away,
-				//	i.e. wait for the response from the caller (java), which never comes
-				final String fimoCmd = "./fimo  " + " -o "+ fimoOutputDir + " " + dremeOutputFileName + " " + seqFileName + " 2>/dev/null"; 
+				// *** Locate motifs, discovered by Dreme, using FIMO  
+				//		(see http://meme.sdsc.edu/meme/doc/overview.html or docs in the meme install dir)
 				
+					
+				// 2>1 1>/dev/null - merge error output stream with normal output stream; then scrap normal output. Reason: 
+				//		not to flood the input streams, which causes the process to run away (i.e. wait for the response from the 
+				//		caller (java), which never comes)
+				final String fimoCmd = memeInstallDirName+ "fimo " + "-o "+ fimoOutputDir + " " + dremeOutputFileName + " " + seqFileName + " 2>1 1>/dev/null"; 
+							
+				System.out.println("Starting FIMO execution. FIMO command:\n" + fimoCmd+"\n");
 				
-				//System.out.println(mastCmd + "\n");
-				System.out.println("Starting FIMO execution.");
-				pr = rt.exec(new String[] { "/bin/sh", "-c", fimoCmd }, null, new File(memeInstallDirName)); 
+				pr = rt.exec(new String[] { "/bin/sh", "-c", fimoCmd }, null, new File(tempMemeOutputDir)); 
 
 				exitVal = pr.waitFor();
 				System.out.println("FIMO exit code: " + exitVal);
@@ -159,8 +166,8 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 			e.printStackTrace();
 		}
 		
-		//return parsed MAST output
-		return DataFormatter.extractRegElementFromGff(fimoOutputDir + "fimo.gff");
+		//return parsed FIMO output
+		return DataFormatter.extractRegElementFromGff(tempMemeOutputDir+fimoOutputDir + "fimo.gff");
 	}
 	
 	

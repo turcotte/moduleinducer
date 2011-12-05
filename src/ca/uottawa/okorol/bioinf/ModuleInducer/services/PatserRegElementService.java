@@ -529,10 +529,10 @@ public class PatserRegElementService implements RegulatoryElementService {
 					
 					currPwmNum++;
 					
-					if (currPwmNum > maxPwmNum){
-						throw new DataFormatException("Number of biological markers (PSSMs) has exceeded the limit of " +
-								maxPwmNum + ".");
-					}
+//					if (currPwmNum > maxPwmNum){
+//						throw new DataFormatException("Number of biological markers (PSSMs) has exceeded the limit of " +
+//								maxPwmNum + ".");
+//					}
 					
 					BufferedWriter writer = new BufferedWriter(new FileWriter(dirName + pwmName + ".matrix"));
 					
