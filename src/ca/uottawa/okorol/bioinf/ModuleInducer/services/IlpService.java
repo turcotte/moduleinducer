@@ -783,24 +783,29 @@ public class IlpService {
 	private String getMacScriptContents() throws DataFormatException{
 		String alephDir = SystemVariables.getInstance().getString("ilp.install.dir");
 		String swiplPath = SystemVariables.getInstance().getString("swipl.install.dir");
+		String htmlResultFileName = SystemVariables.getInstance().getString("html.results.file.name");
+		String ilpResultPprintFileName = SystemVariables.getInstance().getString("ilp.pprint.result.file.name");
+		String htmlResultHeaderFileName = SystemVariables.getInstance().getString("html.header.file.name");
+		String htmlResultFooterFileName = SystemVariables.getInstance().getString("html.footer.file.name");
+		
 		
 		String str = "#!/bin/bash \n" +
 				"export PATH=" + swiplPath + ":$PATH\n" +
 				"swipl <<EOF\n" +
 				"['" + alephDir + "aleph'].\n" +
 				"[ilpBackground].\n" +
-				"read_all(moduleInducer), induce, mi_pprint_to_file('theory_seq_info.txt'), halt.\n" +
+				"read_all(moduleInducer), induce, mi_pprint_to_file('" + ilpResultPprintFileName + "'), halt.\n" +
 				"EOF\n\n" +
-				"cat template_header.html > template.html \n\n" +
-				"if [ -f theory_seq_info.txt ]\n" +
+				"cat " + htmlResultHeaderFileName + " > template.html \n\n" +
+				"if [ -f " + ilpResultPprintFileName + " ]\n" +
 				"then \n" +
-				"    cat theory_seq_info.txt >> template.html \n" +
+				"    cat " + ilpResultPprintFileName + " >> template.html \n" +
 				"else \n" +
 				"    echo 'Internal error' >> template.html \n" +
 				"fi \n \n" +
-				"cat template_footer.html >> template.html \n\n" +
-				"rm -f index.html \n" +
-				"mv template.html index.html"
+				"cat " + htmlResultFooterFileName + " >> template.html \n\n" +
+				"rm -f "+ htmlResultFileName + "\n" +
+				"mv template.html "+ htmlResultFileName;
 		;
 		
 		return str;
@@ -925,7 +930,7 @@ public class IlpService {
 			
 			if (System.getProperty("os.name").startsWith("Mac")){
 //				final String cmd = "sh runILP.sh 2>/dev/null";	
-				final String cmd = "sh runILP.sh 2>1 1> /dev/null";	
+				final String cmd = "sh runILP.sh 2>/dev/null 1> /dev/null";	
 				
 				 pr = rt.exec(new String[] { "/bin/sh", "-c", cmd }, null, ilpDir);
 				

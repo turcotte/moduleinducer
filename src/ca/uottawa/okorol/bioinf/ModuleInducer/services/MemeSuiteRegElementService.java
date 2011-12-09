@@ -28,12 +28,13 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 
 	private String memeInstallDirName = SystemVariables.getInstance().getString("meme.install.dir"); 
 	private String tempMemeOutputDir;
+	private String tempJobDir;
 	private Hashtable<String, Double> pssmMatchingStats; //keeps track of number of PSSM matches in all sequences / by # of sequences
 	
 	
 	
 	public MemeSuiteRegElementService(String tempJobDir) throws DataFormatException{		
-		
+		this.tempJobDir = tempJobDir;
 		this.tempMemeOutputDir = FileHandling.createTempMemeOutputDirectory(tempJobDir);
 		
 	}
@@ -102,7 +103,7 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 					// 2>1 1>/dev/null - merge error output stream with normal output stream; then scrap normal output. Reason: 
 					//		not to flood the input streams, which causes the process to run away (i.e. wait for the response from the 
 					//		caller (java), which never comes)
-					final String dremeCmd = memeInstallDirName + "dreme -e 100 -p " + seqFileName + " 2>1  1>/dev/null"; 
+					final String dremeCmd = memeInstallDirName + "dreme -e 0.5 -p " + seqFileName + " 2>/dev/null  1>/dev/null"; 
 					
 
 					System.out.println("Starting DREME execution. DREME command:\n"+ dremeCmd + "\n");
@@ -118,11 +119,16 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 					exitVal = pr.waitFor();
 					System.out.println("DREME exit code: " + exitVal);
 					
-
-					if (FileHandling.fileContains(tempMemeOutputDir + dremeOutputFileName, "0 motifs with E-value < ")){
-						throw new DataFormatException("DREME did not find any motifs. ");
+					if (exitVal != 0){
+						throw new DataFormatException("DREME execution failed. ");
 					}
+
+					String relPathToDremeHtmlResult = tempMemeOutputDir.substring(tempJobDir.length()) + "dreme_out/dreme.html";
+					SystemVariables.getInstance().setRelativePathToDreme(relPathToDremeHtmlResult);
 					
+					if (!FileHandling.fileContains(tempMemeOutputDir + dremeOutputFileName, "MOTIF")){
+						throw new DataFormatException("DREME did not find any motifs in the experiment sequences. ");
+					}
 					
 				}
 				

@@ -16,9 +16,23 @@ public class SystemVariables {
 	
 	private static ResourceBundle resourceBundle;	
 	private static Locale currentLocale;
-	private String experimentNotes; // This string will be printed in the ilp theory file
+	
+	// execution parameters
 	private double positivePatserCutOffScore;  
 	private double negativePatserCutOffScore;
+	
+	// statistics and results variables
+	private String experimentNotes; // This string will be printed in the ilp theory file
+	private String relativePathToDreme;
+	private int posSeqNum;
+	private int negSeqNum;
+	private double posATcomposition;
+	private double posCGcomposition;
+	private double negATcomposition;
+	private double negCGcomposition;
+	private int posSeqRelElMatchesNum;
+	private int negSeqRelElMatchesNum;
+	
 	
 	//constants
 	public static final String SYNTHETIC_REG_REGION_PREFIX = "synthetic_";
@@ -76,15 +90,81 @@ public class SystemVariables {
 		return instance;
 	}
 	
+	
+	
+	// ********* Runtime Getters and Setters  ***********
+	public int getPosSeqNum() {
+		return posSeqNum;
+	}
+	public void setPosSeqNum(int posSeqNum) {
+		this.posSeqNum = posSeqNum;
+	}
+
+	public int getNegSeqNum() {
+		return negSeqNum;
+	}
+	public void setNegSeqNum(int negSeqNum) {
+		this.negSeqNum = negSeqNum;
+	}
+
+	public int getPosSeqRelElMatchesNum() {
+		return posSeqRelElMatchesNum;
+	}
+	public void setPosSeqRelElMatchesNum(int posSeqRelElMatchesNum) {
+		this.posSeqRelElMatchesNum = posSeqRelElMatchesNum;
+	}
+
+	public int getNegSeqRelElMatchesNum() {
+		return negSeqRelElMatchesNum;
+	}
+	public void setNegSeqRelElMatchesNum(int negSeqRelElMatchesNum) {
+		this.negSeqRelElMatchesNum = negSeqRelElMatchesNum;
+	}
+	
+	public String getRelativePathToDreme() {
+		return relativePathToDreme;
+	}
+	public void setRelativePathToDreme(String relativePathToDreme) {
+		this.relativePathToDreme = relativePathToDreme;
+	}
+	
+	public double getPosATcomposition() {
+		return posATcomposition;
+	}
+	public void setPosATcomposition(double posATcomposition) {
+		this.posATcomposition = posATcomposition;
+	}
+
+	public double getPosCGcomposition() {
+		return posCGcomposition;
+	}
+	public void setPosCGcomposition(double posCGcomposition) {
+		this.posCGcomposition = posCGcomposition;
+	}
+
+	public double getNegATcomposition() {
+		return negATcomposition;
+	}
+	public void setNegATcomposition(double negATcomposition) {
+		this.negATcomposition = negATcomposition;
+	}
+
+	public double getNegCGcomposition() {
+		return negCGcomposition;
+	}
+	public void setNegCGcomposition(double negCGcomposition) {
+		this.negCGcomposition = negCGcomposition;
+	}
+	
+	
+	
 	public String getExperimentNotes() {
 		return experimentNotes;
 	}
-
 	public void setExperimentNotes(String experimentNotes) {
 		this.experimentNotes = experimentNotes;
 	}
 	public void appendToExperimentNotes(String extraNotes) {
 		experimentNotes = experimentNotes + extraNotes;
 	}
-	
 }
