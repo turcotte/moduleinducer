@@ -10,6 +10,7 @@ import ca.uottawa.okorol.bioinf.ModuleInducer.interfaces.RegulatoryElementServic
 import ca.uottawa.okorol.bioinf.ModuleInducer.interfaces.RegulatoryRegionService;
 import ca.uottawa.okorol.bioinf.ModuleInducer.properties.SystemVariables;
 import ca.uottawa.okorol.bioinf.ModuleInducer.tools.FeaturesTools;
+import ca.uottawa.okorol.bioinf.ModuleInducer.tools.FileHandling;
 
 public class Explorer{
 	private RegulatoryRegionService regulatoryRegionService;
@@ -53,6 +54,9 @@ public class Explorer{
 		
 		///////  Experiment set up
 		
+		SystemVariables.getInstance().setPosSeqNum(regulatoryRegionService.getPositiveRegulatoryRegions().size());
+		SystemVariables.getInstance().setNegSeqNum(regulatoryRegionService.getNegativeRegulatoryRegions().size());
+		
 		SystemVariables.getInstance().appendToExperimentNotes("\\n* Number of positive sequences: " + regulatoryRegionService.getPositiveRegulatoryRegions().size()); 
 		SystemVariables.getInstance().appendToExperimentNotes("\\n* Number of negative sequences: "+ regulatoryRegionService.getNegativeRegulatoryRegions().size());
 
@@ -66,10 +70,16 @@ public class Explorer{
 		posCGcomposition = posNtComposition[1] + posNtComposition[2];
 		SystemVariables.getInstance().appendToExperimentNotes("\\n* A:T and C:G composition of positive sequences: " + posATcomposition + " " + posCGcomposition);
 
+		SystemVariables.getInstance().setPosATcomposition(posATcomposition);
+		SystemVariables.getInstance().setPosCGcomposition(posCGcomposition);
+		
 		double[] negNtComposition = FeaturesTools.getNucleotideComposition(regulatoryRegionService.getNegativeRegulatoryRegions());
 		negATcomposition = negNtComposition[0] + negNtComposition[3];
 		negCGcomposition = negNtComposition[1] + negNtComposition[2];
 		SystemVariables.getInstance().appendToExperimentNotes("\\n* A:T and C:G composition of negative sequences: " + negATcomposition + " " + negCGcomposition);
+		
+		SystemVariables.getInstance().setNegATcomposition(negATcomposition);
+		SystemVariables.getInstance().setNegCGcomposition(negCGcomposition);
 		
 	}
 	
@@ -179,6 +189,10 @@ public class Explorer{
 		
 		String ilpTheory = ilpService.runILP();		
 //		return ilpTheory;
+		
+		//Overwrite with the footer that explains the theory
+		String htmlFooterFileName = tempIlpJobDirName + SystemVariables.getInstance().getString("html.footer.file.name");
+		FileHandling.writeFile(htmlFooterFileName, FileHandling.getHTMLResultsFooter(true));
 		
 		return "Done";
 	}

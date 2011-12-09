@@ -6,9 +6,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
 
-import ca.uottawa.okorol.bioinf.ModuleInducer.data.Feature;
 import ca.uottawa.okorol.bioinf.ModuleInducer.exceptions.DataFormatException;
 import ca.uottawa.okorol.bioinf.ModuleInducer.properties.SystemVariables;
 
@@ -140,15 +138,38 @@ public class FileHandling {
 		
 		
 		//** Write initial htlm results page
-		writeFile(htmlResultsFileName, getHTMLResultsHeader() + getHTMLResultsTempBody() +getHTMLResultsFooter());
+		writeFile(htmlResultsFileName, getHTMLResultsHeader(true) + getHTMLResultsTempBody() +getHTMLResultsFooter(false));
 		//writeInitialResultsPage(htmlResultsFileName);
 		
 		
 		//** Write header and footer files for a script to display final result
-		writeFile(htmlHeaderFileName, getHTMLResultsHeader());
-		writeFile(htmlFooterFileName, getHTMLResultsFooter());
+		writeFile(htmlHeaderFileName, getHTMLResultsHeader(false));
+		writeFile(htmlFooterFileName, getHTMLResultsFooter(false));
 		
 		return SystemVariables.getInstance().getString("html.results.file.name");
+	}
+	
+	/* Over-writes an ilp pretty print result file with error message
+	 * this file is then inserted between header and footer html of the results page by a script
+	 * (E.g. created when DREME returned no results) 
+	 * @param jobDir - directory created for the job, where the results will be written; 
+	 * 				  should end with "/"
+	 * @param errorMsg - message to be written on the page
+	 * @return name of the result page (without full path)
+	 */
+	public static void createErrorResultsWebPage(String jobDir, String errorMsg) throws DataFormatException {
+		
+//		String ilpPprintFileName = jobDir + SystemVariables.getInstance().getString("ilp.pprint.result.file.name");
+		String fileName = jobDir + SystemVariables.getInstance().getString("html.results.file.name");
+		
+		String htmlMsg = "</pre> \n<p class=\"error-message\"> " +
+				"ModuleInducer was unable to extract a theory from the specified data. The reason: <br/>"
+				+ errorMsg + " </p>\n";
+		
+		htmlMsg = htmlMsg +"<pre>\n";
+		
+		writeFile(fileName, getHTMLResultsHeader(false) + htmlMsg + getHTMLResultsFooter(false));
+		
 	}
 	
 	/* Creates a directory for the pwms in the temporary job directory specified.
@@ -173,15 +194,24 @@ public class FileHandling {
 	}
 	
 	
-	private static String getHTMLResultsHeader(){
+	private static String getHTMLResultsHeader(boolean needsRefresh){
 		String str = "<html><head> \n\n" +
-				"<title>Module Inducer: Results</title>	<meta http-equiv=\"Refresh\" content=\"5\" />\n\n" +
-				"<style> <!--\n" +
+				"<title>Module Inducer: Results</title>	";
+		
+		if (needsRefresh){
+			str = str + "<meta http-equiv=\"Refresh\" content=\"5\" />";
+		}
+		
+		str = str + "\n\n<style> <!--\n" +
 				"		* {font-family: Verdana, Geneva, sans-serif; font-size: 9pt; }\n" +
 				"		.main {width: 700px; margin: 25px 25px 25px 25px; }\n" +
 				"		.title {font-size: 13pt; font-weight:bold;	}\n" +
 				"		.header {background-color: white; padding: 10px; margin: 10px; border-style:solid; border-width:2px; border-color: #348017; text-align: center; }\n" +
 				"		.mi_results_body {background-color: white; padding: 10px; margin: 10px;}\n" +
+				"		.info-message {background-color: #F8F8F8; padding: 4px; text-align: left; }\n" +
+				"		.error-message { text-align: left; padding: 10px; background-color: #FFF380}\n" +
+				"		.data-entry-title {font-size: 11pt; font-weight:bold;}\n" +
+				"		.help-header-text{color:#FF9900; font-weight:bold; }\n" +
 				"--> </style>\n\n" +
 				"</head>\n\n" +
 				"<body>\n\n" +
@@ -195,6 +225,8 @@ public class FileHandling {
 		return str;
 	}
 	
+	
+	
 	private static String getHTMLResultsTempBody(){
 		String str = "<br/>Your results will appear on this page. <br/><br/>" +
 				"The time that it will take for the results to appear can vary greatly: <br/>" +
@@ -206,16 +238,57 @@ public class FileHandling {
 				"to arrange for an off-line run.<br/>";
 		
 		return str;
+		
 	}
 	
-	private static String getHTMLResultsFooter(){
+	private static String getRuleDescriptionHtml(){
+		String str = "<p class=\"info-message\">\n" +
+				"	<font class=\"help-header-text\">How to read the theory </font> <br/><br/>\n\n" +
+				"	The theory consists of several rules that describe experiment data. You can see how significant the rule is by the number of positive (experiment) and negative (control) examples covered ([Pos cover = 12 Neg cover = 0]). In ideal case, the positive cover will be the total number of experiment sequences and the negative cover will be 0, which means that one rule describes all the experiment and none of the control sequences.<br/><br/> \n\n" +
+				"	Example of reading a rule.\n\n" +
+				"	<br/><br/>&nbsp;&nbsp;positive(A) <font style=\"background-color: #C3FDB8;\">:-</font><br/> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;has_feature(A,m2)	<font style=\"background-color: #C3FDB8;\">, </font>before(A,m7,m12).<br/><br/>\n\n" +
+				"	Sequence A is an experiment sequence<font style=\"background-color: #C3FDB8;\"> if </font>it contains a feature (biological marker or transcription factor binding site) m2 <font style=\"background-color: #C3FDB8;\">and</font> biological marker m7 is located before m12.<br/>\n" +
+				"	<br/><br/>\n" +
+				"	<font class=\"help-header-text\">Description of possible theory rules (m1, m2 are assumed to be biological markers):</font>\n" +
+				"	<br/><br/>&nbsp;&nbsp; <b>::</b> <i>has_feature(A, m1)</i> - sequence A contains m1. By contains we mean that the motif correspondig to m1 was found in A.\n" +
+				"	<br/><br/>&nbsp;&nbsp; <b>::</b> <i>has_feature(A, m1, 'R')</i> - sequence A contains m1 as a reverse match (see \"Other parameters\" below for more details). \n" +
+				"	<br/><br/>&nbsp;&nbsp; <b>::</b> <i>before(A, m1, m2)</i> - regulatory element m1 is located before m2 in sequence A.\n" +
+//				"	<br/><br/>&nbsp;&nbsp; <b>::</b> <i>chromosome(A, chr1)</i> - sequence A is found on the chromosome chr1. Only relevant when the chromosome information was supplied.\n" +
+				"	<br/><br/>&nbsp;&nbsp; <b>::</b> <i>distance_interval(A, m1, m2, 10, 2)</i> - the distance between regulatory element m1 and m2 is 10 +/- 2 nucleotides in sequence \n" +
+				"	<br/><br/>&nbsp;&nbsp; <b>::</b> <i>pos_lteq(A, m1, -35)</i> - m1 is located at or less than the index -35 inside sequence A. The positions inside the input sequences are numbered with 0 in the middle, increasing the indexes to the right and decreasing to the left (i.e. [ -3, -2, -1, 0, 1, 2, 3 ]). This numbering extra information on the relative location of the motif inside the sequence. This information is especially useful when analyzing ChIP-Seq data, because it shows how close the motif is located from the peak.\n\n" +
+				"	<br/><br/>&nbsp;&nbsp; <b>::</b> <i>pos_gteq(A, m1, 57)</i> - m1 is located at or more than the index -35 inside sequence A (similar to above).<br/><br/>\n" +
+				"	<font class=\"help-header-text\">Other parameters:</font>\n" +
+				"	<br/>&nbsp;&nbsp; <b>::</b> <i>'D'</i> - the match of the biological marker was found on a direct strand (5' to 3')\n" +
+				"	<br/>&nbsp;&nbsp; <b>::</b> <i>'R'</i> - the match of the biological marker was found on a reverse strand (3' to 5')\n" +
+				"</p>";
+		return str;
+	}
+	
+	public static String getHTMLResultsFooter(boolean hasRuleDescription) throws DataFormatException {
 		String str = "</pre>\n" +
-				"</div>\n" +
+				"<div class=\"data-entry-title\">Run information</div>\n" +
+				"<br/>Number of experiment sequences submitted: " + SystemVariables.getInstance().getPosSeqNum() +
+				"<br/>A:T and C:G composition of experiment sequences: " + SystemVariables.getInstance().getPosATcomposition() + " " + SystemVariables.getInstance().getPosCGcomposition() +
+				"<br/>Number of control sequences submitted: "+ SystemVariables.getInstance().getNegSeqNum() +
+				"<br/>A:T and C:G composition of control sequences: " + SystemVariables.getInstance().getNegATcomposition() + " " + SystemVariables.getInstance().getNegCGcomposition();
+				
+		if (hasRuleDescription) {
+			str = str + getRuleDescriptionHtml();
+		}
+		
+		String relPathToDreme = SystemVariables.getInstance().getRelativePathToDreme();
+		if (relPathToDreme != null && !relPathToDreme.isEmpty()){
+			str = str + "<br/><p> Results of DREME execution can be found here: <a href=\""+relPathToDreme+"\">DREME results.</a></p>\n";
+		}
+		
+		str = str +	"</div>\n" +
 				"</div>\n" +
 				"</body></html>";
 		
 		return str;
 	}
+	
+	
 	
 	
 	public static boolean writeLogFile(String fileName) throws IOException, DataFormatException{

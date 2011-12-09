@@ -27,7 +27,6 @@ public class CustomDataRegRegionService implements RegulatoryRegionService {
 		
 		validateRegions(positiveRegRegions, negativeRegRegions);
 		
-		//DataModeller.generateSimulatedRegulatoryRegions(positiveRegRegions, negExMultiplicationFactor, NEGATIVE_REGION_PREFIX);
 	}
 	
 	public CustomDataRegRegionService(InputStream posExIn, InputStream negExIn) throws DataFormatException, IOException{
@@ -35,8 +34,6 @@ public class CustomDataRegRegionService implements RegulatoryRegionService {
 		negativeRegRegions = this.readRegulatoryRegions(negExIn);
 		
 		validateRegions(positiveRegRegions, negativeRegRegions);
-		
-		//DataModeller.generateSimulatedRegulatoryRegions(positiveRegRegions, negExMultiplicationFactor, NEGATIVE_REGION_PREFIX);
 	}
 	
 	public CustomDataRegRegionService(String posSequeces, String negSequences) throws DataFormatException, IOException{
@@ -44,8 +41,6 @@ public class CustomDataRegRegionService implements RegulatoryRegionService {
 		negativeRegRegions = formatRegulatoryRegions(negSequences);
 		
 		validateRegions(positiveRegRegions, negativeRegRegions);
-		
-		//DataModeller.generateSimulatedRegulatoryRegions(positiveRegRegions, negExMultiplicationFactor, NEGATIVE_REGION_PREFIX);
 	}
 	
 	
