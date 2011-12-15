@@ -167,9 +167,11 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 		} catch (IOException e) {
 			System.out.println(e.toString());
 			e.printStackTrace();
+			throw new DataFormatException("MEME suite execution failed.");
 		} catch (InterruptedException e) {
 			System.out.println(e.toString());
 			e.printStackTrace();
+			throw new DataFormatException("MEME suite execution failed.");
 		}
 		
 		//return parsed FIMO output

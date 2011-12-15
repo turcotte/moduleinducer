@@ -40,6 +40,7 @@ public class PatserRegElementService implements RegulatoryElementService {
 			this.tempPatserOutputDir = FileHandling.createTempPatserOutputDirectory(tempJobDir);
 		}
 		this.matrixFilesDir = pwmDir.getAbsolutePath(); //TODO
+		
 	}
 	
 	/* Parses a string with multiple PWMs and writes each pwm in an individual, Patser-approved file 
@@ -61,6 +62,7 @@ public class PatserRegElementService implements RegulatoryElementService {
 		this.matrixFilesDir = FileHandling.createTempPwmDirectory(tempPatserOutputDir);
 		savePwmFiles(matrixFilesDir, pwms);
 		//matrixFilesDir = (new File(matrixFilesDir)).getAbsolutePath(); //TODO stupid windows hack
+		
 	}
 	
 	
@@ -224,15 +226,18 @@ public class PatserRegElementService implements RegulatoryElementService {
 					}
 				} // end of reading patser input
 				
+				if (tfbsHits.isEmpty()){
+					throw new DataFormatException("PATSER did not locate any motifs in the data.");
+				}
 				pssmMatchingStats.put(pssmName, (double)hits / regRegions.size());
 				
 			
 				//int exitVal = pr.waitFor();
 				//System.out.println("Exited with error code " + exitVal);
 
-			} catch (Exception e) {
-				System.out.println(e.toString());
+			} catch (IOException e) {
 				e.printStackTrace();
+				throw new DataFormatException("PATSER execution failed. ");
 			}
 
 		}

@@ -45,9 +45,8 @@ public class FileHandling {
 		if (!dir.exists()) {
 			boolean success = dir.mkdirs();
 			if (!success) {
-				//TODO: Production: use the commented exception below
-				throw new DataFormatException("Could not create a temporary directory "+ dirName);
-				//throw new DataFormatException("Could not create a temporary directory for the job.");
+				//throw new DataFormatException("Could not create a temporary directory "+ dirName);
+				throw new DataFormatException("Could not create a temporary directory for the job.");
 			}
 		}
 		
@@ -138,13 +137,13 @@ public class FileHandling {
 		
 		
 		//** Write initial htlm results page
-		writeFile(htmlResultsFileName, getHTMLResultsHeader(true) + getHTMLResultsTempBody() +getHTMLResultsFooter(false));
+		writeFile(htmlResultsFileName, getHTMLResultsHeader(true) + getHTMLResultsTempBody() +getHTMLResultsFooter(false,false));
 		//writeInitialResultsPage(htmlResultsFileName);
 		
 		
 		//** Write header and footer files for a script to display final result
 		writeFile(htmlHeaderFileName, getHTMLResultsHeader(false));
-		writeFile(htmlFooterFileName, getHTMLResultsFooter(false));
+		writeFile(htmlFooterFileName, getHTMLResultsFooter(false, true));
 		
 		return SystemVariables.getInstance().getString("html.results.file.name");
 	}
@@ -168,7 +167,7 @@ public class FileHandling {
 		
 		htmlMsg = htmlMsg +"<pre>\n";
 		
-		writeFile(fileName, getHTMLResultsHeader(false) + htmlMsg + getHTMLResultsFooter(false));
+		writeFile(fileName, getHTMLResultsHeader(false) + htmlMsg + getHTMLResultsFooter(false, true));
 		
 	}
 	
@@ -264,22 +263,24 @@ public class FileHandling {
 		return str;
 	}
 	
-	public static String getHTMLResultsFooter(boolean hasRuleDescription) throws DataFormatException {
-		String str = "</pre>\n" +
-				"<div class=\"data-entry-title\">Run information</div>\n" +
-				"<br/>Number of experiment sequences submitted: " + SystemVariables.getInstance().getPosSeqNum() +
-				"<br/>A:T and C:G composition of experiment sequences: " + SystemVariables.getInstance().getPosATcomposition() + " " + SystemVariables.getInstance().getPosCGcomposition() +
-				"<br/>Number of control sequences submitted: "+ SystemVariables.getInstance().getNegSeqNum() +
-				"<br/>A:T and C:G composition of control sequences: " + SystemVariables.getInstance().getNegATcomposition() + " " + SystemVariables.getInstance().getNegCGcomposition();
-				
+	public static String getHTMLResultsFooter(boolean hasRuleDescription, boolean hasJobDescription) throws DataFormatException {
+		String str = "</pre>\n";
+		
 		if (hasRuleDescription) {
 			str = str + getRuleDescriptionHtml();
 		}
 		
-		String relPathToDreme = SystemVariables.getInstance().getRelativePathToDreme();
-		if (relPathToDreme != null && !relPathToDreme.isEmpty()){
-			str = str + "<br/><p> Results of DREME execution can be found here: <a href=\""+relPathToDreme+"\">DREME results.</a></p>\n";
-		}
+		if (hasJobDescription){
+			str = str + "<div class=\"data-entry-title\">Run information</div>\n" +
+						getStatisticsTableHtml();
+					
+			String relPathToDreme = SystemVariables.getInstance().getRelativePathToDreme();
+			if (relPathToDreme != null && !relPathToDreme.isEmpty()){
+				str = str + "<br/><p> Results of DREME execution can be found here: <a href=\""+relPathToDreme+"\">DREME results.</a></p>\n";
+			}
+			
+		}		
+		
 		
 		str = str +	"</div>\n" +
 				"</div>\n" +
@@ -289,7 +290,38 @@ public class FileHandling {
 	}
 	
 	
-	
+	private static String getStatisticsTableHtml() throws DataFormatException{
+		String str = "";
+		
+		str = "<table border=\"1\" width=\"100%\">\n" +
+				"	<tr>\n" +
+				"		<td/>\n" +
+				"		<td><strong>Experiment</strong></td>\n" +
+				"		<td><strong>Control</strong></td>\n" +
+				"	</tr>\n" +
+				"	<tr>\n" +
+				"		<td>Number of sequences</td>\n" +
+				"		<td>" + SystemVariables.getInstance().getPosSeqNum() + "</td>\n" +
+				"		<td>"+ SystemVariables.getInstance().getNegSeqNum() +"</td>\n" +
+				"	</tr>\n" +
+				"	<tr>\n" +
+				"		<td>A:C composition</td>\n" +
+				"		<td>" + SystemVariables.getInstance().getPosATcomposition() + "</td>\n" +
+				"		<td>" + SystemVariables.getInstance().getNegATcomposition() + "</td>\n" +
+				"	</tr>\n" +
+				"	<tr>\n" +
+				"		<td>G:C composition</td>\n" +
+				"		<td>" + SystemVariables.getInstance().getPosCGcomposition() + "</td>\n" +
+				"		<td>" + SystemVariables.getInstance().getNegCGcomposition() + "</td>\n" +
+				"	</tr>\n" +
+				"	<tr>\n" +
+				"		<td>Total number of motif matches</td>\n" +
+				"		<td>" + SystemVariables.getInstance().getPosSeqRelElMatchesNum() + "</td>\n" +
+				"		<td>" + SystemVariables.getInstance().getNegSeqRelElMatchesNum() + "</td>\n" +
+				"	</tr>\n" +
+				"</table>\n";
+		return str;
+	}
 	
 	public static boolean writeLogFile(String fileName) throws IOException, DataFormatException{
 		BufferedWriter writer = new BufferedWriter(new FileWriter(SystemVariables.getInstance().getString("temp.output.dir") + fileName ));

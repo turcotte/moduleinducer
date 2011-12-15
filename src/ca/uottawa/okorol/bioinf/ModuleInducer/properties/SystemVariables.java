@@ -39,17 +39,15 @@ public class SystemVariables {
 
 
 	public double getPositivePatserCutOffScore() {
-		return Double.parseDouble(this.getString("patser.score.cutoff.positive.examples"));
+		return positivePatserCutOffScore;
 	}
-
 	public void setPositivePatserCutOffScore(double positivePatserCutOffScore) {
 		this.positivePatserCutOffScore = positivePatserCutOffScore;
 	}
 
 	public double getNegativePatserCutOffScore() {
-		return Double.parseDouble(this.getString("patser.score.cutoff.negative.examples"));
+		return negativePatserCutOffScore;
 	}
-
 	public void setNegativePatserCutOffScore(double negativePatserCutOffScore) {
 		this.negativePatserCutOffScore = negativePatserCutOffScore;
 	}
@@ -73,6 +71,10 @@ public class SystemVariables {
 		}
 		
 		resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME, currentLocale);
+
+		// set initial to default values
+		positivePatserCutOffScore = Double.parseDouble(this.getString("patser.score.cutoff.positive.examples"));  
+		negativePatserCutOffScore = Double.parseDouble(this.getString("patser.score.cutoff.negative.examples"));
 	}
 
 	public String getString(String key) {
@@ -90,7 +92,18 @@ public class SystemVariables {
 		return instance;
 	}
 	
-	
+	public void cleanStatistics(){
+		experimentNotes = "";
+		relativePathToDreme = "";
+		posSeqNum = 0;
+		negSeqNum = 0;
+		posATcomposition = 0.0;
+		posCGcomposition = 0.0;
+		negATcomposition = 0.0;
+		negCGcomposition = 0.0;
+		posSeqRelElMatchesNum = 0;
+		negSeqRelElMatchesNum = 0;
+	}
 	
 	// ********* Runtime Getters and Setters  ***********
 	public int getPosSeqNum() {
