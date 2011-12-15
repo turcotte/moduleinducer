@@ -23,8 +23,8 @@ public class Explorer{
 	//TODO: inline
 	//min score of the feature to be included in the experiment;
 	// i.e. only features with higher score will be included in the rule induction
-	private double positiveCutOffScore = SystemVariables.getInstance().getPositivePatserCutOffScore();
-	private double negativeCutOffScore = SystemVariables.getInstance().getNegativePatserCutOffScore();
+	private double positiveCutOffScore;
+	private double negativeCutOffScore;
 	
 	private double posATcomposition;
 	private double posCGcomposition;
@@ -52,7 +52,11 @@ public class Explorer{
 		this.regulatoryElementService = regElService;
 		this.tempIlpJobDirName = tempIlpJobDirName;
 		
-		///////  Experiment set up
+		positiveCutOffScore = SystemVariables.getInstance().getPositivePatserCutOffScore();
+		negativeCutOffScore = SystemVariables.getInstance().getNegativePatserCutOffScore();
+		
+		///////  Statistics
+		SystemVariables.getInstance().cleanStatistics(); //clean old;
 		
 		SystemVariables.getInstance().setPosSeqNum(regulatoryRegionService.getPositiveRegulatoryRegions().size());
 		SystemVariables.getInstance().setNegSeqNum(regulatoryRegionService.getNegativeRegulatoryRegions().size());
@@ -84,9 +88,35 @@ public class Explorer{
 	}
 	
 	
+	
+
+	/*
+	 * Runs ILP 
+	 */
+	public String induceRules() throws DataFormatException {
+
+		IlpService ilpService = createIlpFiles();
+		
+		System.out.println("== Created all ILP files. Starting to induce.");
+		
+
+		//
+		// ==> the star of the show
+		//
+		ilpService.runILP();
+		
+		
+		// Overwrite temporary result html footer with the one that explains how to read a theory
+		String htmlFooterFileName = tempIlpJobDirName + SystemVariables.getInstance().getString("html.footer.file.name");
+		FileHandling.writeFile(htmlFooterFileName, FileHandling.getHTMLResultsFooter(true, true));
+		
+		return "Done";
+	}
+	
+
+	
+	
 	public IlpService createIlpFiles() throws DataFormatException{
-		
-		
 		
 		ArrayList<Feature> posRegElements = regulatoryElementService.getRegulatoryElements(
 				regulatoryRegionService.getPositiveRegulatoryRegions(), positiveCutOffScore, posATcomposition, posCGcomposition);
@@ -95,8 +125,10 @@ public class Explorer{
 			posRegElements = regulatoryElementService.getRegulatoryElements(
 					regulatoryRegionService.getPositiveRegulatoryRegions(), regulatoryRegionService.getNegativeRegulatoryRegions(), positiveCutOffScore);
 		}
-
+		
+		// ***** Add statistics
 		addMotifMatchingStatisticsToNotes("positive");
+		SystemVariables.getInstance().setPosSeqRelElMatchesNum(posRegElements.size());
 
 		
 		
@@ -108,8 +140,9 @@ public class Explorer{
 					regulatoryRegionService.getNegativeRegulatoryRegions(), null, negativeCutOffScore);
 		}
 		
+		// ***** Add statistics
 		addMotifMatchingStatisticsToNotes("negative");
-		
+		SystemVariables.getInstance().setNegSeqRelElMatchesNum(negRegElements.size());
 		
 
 		/*	
@@ -174,27 +207,6 @@ public class Explorer{
 //			System.out.println(r_pssmNames);
 //			System.out.println(r_matches);
 		}
-	}
-	
-	
-	/*
-	 * @param dirName	full path to a directory where all the ilp files will be written
-	 * 					and where the ilp result file will be written after Aleph has run
-	 */
-	public String induceRules() throws DataFormatException {
-
-		IlpService ilpService = createIlpFiles();
-		
-		System.out.println("== Created all ILP files. Starting to induce.");
-		
-		String ilpTheory = ilpService.runILP();		
-//		return ilpTheory;
-		
-		//Overwrite with the footer that explains the theory
-		String htmlFooterFileName = tempIlpJobDirName + SystemVariables.getInstance().getString("html.footer.file.name");
-		FileHandling.writeFile(htmlFooterFileName, FileHandling.getHTMLResultsFooter(true));
-		
-		return "Done";
 	}
 	
 
