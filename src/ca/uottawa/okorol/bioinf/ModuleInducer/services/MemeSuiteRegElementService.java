@@ -70,8 +70,8 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 	/* Finds regulatory elements in regulatory sequences
 	 * @param regRegions - list of regulatory regions in which to look for the reg. elements
 	 * @param backgroundRegRegions - list of regulatory regions to be used as background sequences in the search for reg. elements
-	 * @param cutOffScore - minimum score cut off (-ls option in Patser). Matches with lower
-	 * 						score will not be accepted
+	 * @param cutOffScore - NOT USED!!! Dreme cut-off is read from the SystemVariables
+	 * 						
 	 */
 	public ArrayList<Feature> getRegulatoryElements(ArrayList<Feature> regRegions, ArrayList<Feature> backgroundRegRegions, double cutOffScore) throws DataFormatException {
 		
@@ -103,7 +103,8 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 					// 2>1 1>/dev/null - merge error output stream with normal output stream; then scrap normal output. Reason: 
 					//		not to flood the input streams, which causes the process to run away (i.e. wait for the response from the 
 					//		caller (java), which never comes)
-					final String dremeCmd = memeInstallDirName + "dreme -e 0.5 -p " + seqFileName + " 2>/dev/null  1>/dev/null"; 
+					final String dremeCmd = memeInstallDirName + "dreme -e "+ SystemVariables.getInstance().getDremeCutOffScore() +
+												" -p " + seqFileName + " 2>/dev/null  1>/dev/null"; 
 					
 
 					System.out.println("Starting DREME execution. DREME command:\n"+ dremeCmd + "\n");
@@ -140,6 +141,7 @@ public class MemeSuiteRegElementService implements RegulatoryElementService {
 				// 2>1 1>/dev/null - merge error output stream with normal output stream; then scrap normal output. Reason: 
 				//		not to flood the input streams, which causes the process to run away (i.e. wait for the response from the 
 				//		caller (java), which never comes)
+//				final String fimoCmd = memeInstallDirName+ "fimo -output-pthresh 1e-4 " + "-o "+ fimoOutputDir + " " + dremeOutputFileName + " " + seqFileName + " 2>1 1>/dev/null"; 
 				final String fimoCmd = memeInstallDirName+ "fimo " + "-o "+ fimoOutputDir + " " + dremeOutputFileName + " " + seqFileName + " 2>1 1>/dev/null"; 
 							
 				System.out.println("Starting FIMO execution. FIMO command:\n" + fimoCmd+"\n");
