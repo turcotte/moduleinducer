@@ -226,9 +226,7 @@ public class PatserRegElementService implements RegulatoryElementService {
 					}
 				} // end of reading patser input
 				
-				if (tfbsHits.isEmpty()){
-					throw new DataFormatException("PATSER did not locate any motifs in the data.");
-				}
+				
 				pssmMatchingStats.put(pssmName, (double)hits / regRegions.size());
 				
 			
@@ -254,6 +252,10 @@ public class PatserRegElementService implements RegulatoryElementService {
 			tfbsHits.add(new Feature("generic_marker", "end", feature.getId(), "D", feature.getSequence().length()+2, feature.getSequence().length()+2, 0.0));
 		}
 */
+		if (tfbsHits.isEmpty()){
+			throw new DataFormatException("PATSER did not locate any motifs in the data.");
+		}
+		
 		return tfbsHits;
 	}
 	

@@ -20,6 +20,8 @@ public class SystemVariables {
 	// execution parameters
 	private double positivePatserCutOffScore;  
 	private double negativePatserCutOffScore;
+	private double dremeCutOffScore;
+	
 	
 	// statistics and results variables
 	private String experimentNotes; // This string will be printed in the ilp theory file
@@ -51,6 +53,13 @@ public class SystemVariables {
 	public void setNegativePatserCutOffScore(double negativePatserCutOffScore) {
 		this.negativePatserCutOffScore = negativePatserCutOffScore;
 	}
+	
+	public double getDremeCutOffScore() {
+		return dremeCutOffScore;
+	}
+	public void setDremeCutOffScore(double dremeCutOffScore) {
+		this.dremeCutOffScore = dremeCutOffScore;
+	}
 
 	private SystemVariables() throws DataFormatException {
 		
@@ -73,8 +82,9 @@ public class SystemVariables {
 		resourceBundle = ResourceBundle.getBundle(BUNDLE_NAME, currentLocale);
 
 		// set initial to default values
-		positivePatserCutOffScore = Double.parseDouble(this.getString("patser.score.cutoff.positive.examples"));  
-		negativePatserCutOffScore = Double.parseDouble(this.getString("patser.score.cutoff.negative.examples"));
+		positivePatserCutOffScore = Double.parseDouble(this.getString("default.patser.cutoff.score.positive.examples"));  
+		negativePatserCutOffScore = Double.parseDouble(this.getString("default.patser.cutoff.score.negative.examples"));
+		dremeCutOffScore = Double.parseDouble(this.getString("default.dreme.cutoff.score"));
 	}
 
 	public String getString(String key) {
